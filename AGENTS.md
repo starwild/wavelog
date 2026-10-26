@@ -21,12 +21,18 @@
 
 | 项 | 值 |
 |---|---|
+| 工作区根 | `C:\Users\z\WorkBuddy\wavelog`（WorkBuddy 工作目录） |
+| **仓库根** | `C:\Users\z\WorkBuddy\wavelog\wavelog` ← 代码在这里，**工作区根不是仓库根** |
 | 站点 | http://127.0.0.1:8080/ （账号 `admin` / `Wavelog!2026`） |
-| 代码 | `C:\Users\z\WorkBuddy\wavelog`（即仓库根） |
 | PHP | `C:\local\php84\php.exe`（8.4.27 NTS x64，php.ini 已配好扩展） |
 | DB | MariaDB 11.4.8 便携版 `C:\local\mariadb`，`127.0.0.1:3306`，库 `wavelog` / `wavelog` / `wavelog_pass` |
-| 启动 | 双击 `start-db.cmd` + `start-web.cmd`（本质是 `mariadbd` 和 `php -S 127.0.0.1:8080`） |
-| 日志 | `application/logs/log-YYYY-MM-DD.php`、`install/includes/...` 安装器日志 `application/logs/installer_debug.log` |
+| 启动 | 工作区根双击 `start-db.cmd` + `start-web.cmd`（`mariadbd` + `php -S 127.0.0.1:8080 -t ...\wavelog`） |
+| 日志 | `application/logs/log-YYYY-MM-DD.php`、安装器日志 `application/logs/installer_debug.log` |
+| 测试 | `bash tests/smoke.sh`（T0 基线，10 项；详见 `docs/cn-ham/test-plan.md`） |
+
+工作区根另有：`.workbuddy/`（项目记忆）、`wavelog-login.png`（截图）。启动脚本在仓库外，不进 git。
+
+**环境坑（踩过）**：`dxcc_entities` 表为空或缺 `adif=318` 时，**ADIF 导出会静默返回空文件**（导出 SQL 对 `dxcc_entities` 做 INNER JOIN）。装完站必须跑一次 `GET /index.php/update/dxcc` 灌数据，校验 `SELECT COUNT(*) FROM dxcc_entities` ≥ 300。
 
 Windows 沙箱注意：PowerShell 工具无法拉起子进程，用 bash 工具起服务；删文件用 bash `rm`；`.ps1` 必须纯 ASCII（本仓库用不到）。
 
@@ -124,11 +130,12 @@ install/           独立安装器（不走 CI 路由）+ 我们的 _cli_install
 一个改动算完成，必须全部满足：
 
 1. `php -l` 通过本次改动的所有 PHP 文件；
-2. 本地起服务点一遍：录入 → 保存 → 列表 → 编辑 → 重新保存 → ADIF 导出 → ADIF 导入（round-trip 字段不丢）；
-3. `application/logs/log-YYYY-MM-DD.php` 无新增 ERROR（POTA/SOTA/WWFF 拉取失败属已知环境问题，可忽略）；
+2. 按 `docs/cn-ham/test-plan.md` 跑对应层级的用例（改 schema/model 跑 T0 T1 T3 T5；改视图跑 T0 T2 T5 T6）；
+3. `application/logs/log-YYYY-MM-DD.php` 无新增 ERROR（POTA/SOTA/WWFF 拉取失败、APCu 未加载属已知环境噪声，可忽略）；
 4. 若动了 schema：`/index.php/migrate` 在干净库与已装库上都能跑通，`down()` 可回滚；
 5. 中文文案走 `__()`；新增字段在 `README-LOCAL.md` 的改动清单里登记；
 6. 提交信息：`<type>(<scope>): <中文摘要>`，`type ∈ feat|fix|refactor|docs|chore`，例：`feat(qso): 新增双方设备录入块`。
+7. **验收必须由「排空上下文」的子 agent 执行**——它只拿到 `test-plan.md` + 环境，不读实现代码、不看实现对话。理由见 test-plan 第 6 节：这套改动的风险全在「静默失败」，实现者会按自己的实现去测。
 
 ---
 
