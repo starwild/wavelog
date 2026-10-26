@@ -184,6 +184,8 @@
                                         <input type="text" class="form-control" id="comment" name="comment" value="<?php echo htmlspecialchars($qso->COL_COMMENT ? $qso->COL_COMMENT : '', ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
 
+                                    <?php $this->load->view('qso/components/cn_ham_fields', array('qso' => $qso, 'edit_mode' => true)); ?>
+
                                     <div class="row">
                                         <div class="col-sm-6">
                                             <label for="prop_mode"><?= __("Propagation Mode"); ?></label>

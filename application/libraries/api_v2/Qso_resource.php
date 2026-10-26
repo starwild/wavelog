@@ -783,6 +783,16 @@ class Qso_resource extends Api_v2_resource {
 			'stx'        => ['COL_STX', false],
 			'srx_string' => ['COL_SRX_STRING', true],
 			'stx_string' => ['COL_STX_STRING', true],
+			// China HAM Edition: both sides' equipment + Chinese QSL card fields
+			'rig'         => ['COL_RIG', false],
+			'rig_ant'     => ['COL_RIG_ANT', false],
+			'my_rig'      => ['COL_MY_RIG', false],
+			'my_antenna'  => ['COL_MY_ANTENNA', false],
+			'rx_pwr'      => ['COL_RX_PWR', false],
+			'cn_rpt'      => ['COL_RPT', false],
+			'cn_ctcss'    => ['COL_CTCSS', false],
+			'cn_district' => ['COL_CN_DISTRICT', false],
+			'cn_card_no'  => ['COL_CARD_NO', false],
 		];
 	}
 

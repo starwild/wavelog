@@ -666,6 +666,62 @@
                     </tr>
                     <?php } ?>
 
+                    <?php if (!empty($row->COL_MY_ANTENNA)) { ?>
+                    <tr>
+                        <th scope="row"><?= __('我方天线'); ?></th>
+                        <td><?php echo html_escape($row->COL_MY_ANTENNA); ?></td>
+                    </tr>
+                    <?php } ?>
+
+                    <?php if (!empty($row->COL_RIG)) { ?>
+                    <tr>
+                        <th scope="row"><?= __('对方电台'); ?></th>
+                        <td><?php echo html_escape($row->COL_RIG); ?></td>
+                    </tr>
+                    <?php } ?>
+
+                    <?php if (!empty($row->COL_RIG_ANT)) { ?>
+                    <tr>
+                        <th scope="row"><?= __('对方天线'); ?></th>
+                        <td><?php echo html_escape($row->COL_RIG_ANT); ?></td>
+                    </tr>
+                    <?php } ?>
+
+                    <?php if (!empty($row->COL_RX_PWR)) { ?>
+                    <tr>
+                        <th scope="row"><?= __('对方功率 (W)'); ?></th>
+                        <td><?php echo html_escape($row->COL_RX_PWR); ?> W</td>
+                    </tr>
+                    <?php } ?>
+
+                    <?php if (!empty($row->COL_RPT)) { ?>
+                    <tr>
+                        <th scope="row"><?= __('中继 / 直频'); ?></th>
+                        <td><?php echo html_escape($row->COL_RPT); ?></td>
+                    </tr>
+                    <?php } ?>
+
+                    <?php if (!empty($row->COL_CTCSS)) { ?>
+                    <tr>
+                        <th scope="row"><?= __('亚音'); ?></th>
+                        <td><?php echo html_escape($row->COL_CTCSS); ?></td>
+                    </tr>
+                    <?php } ?>
+
+                    <?php if (!empty($row->COL_CN_DISTRICT)) { ?>
+                    <tr>
+                        <th scope="row"><?= __('区县'); ?></th>
+                        <td><?php echo html_escape($row->COL_CN_DISTRICT); ?></td>
+                    </tr>
+                    <?php } ?>
+
+                    <?php if (!empty($row->COL_CARD_NO)) { ?>
+                    <tr>
+                        <th scope="row"><?= __('卡片编号'); ?></th>
+                        <td><?php echo html_escape($row->COL_CARD_NO); ?></td>
+                    </tr>
+                    <?php } ?>
+
                     <?php if($row->station_iota) { ?>
                     <tr>
                         <th scope="row"><?= __("Station") . ' ' . __("IOTA Reference"); ?></th>

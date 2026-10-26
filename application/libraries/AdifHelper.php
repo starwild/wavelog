@@ -249,6 +249,17 @@ class AdifHelper {
 		$line .= $this->getAdifFieldLine("MY_RIG", $qso->{'COL_MY_RIG'} ?? '');
 		$line .= $this->getAdifFieldLine("MY_RIG_INTL", $qso->{'COL_MY_RIG_INTL'} ?? '');
 
+		// China HAM Edition: application defined fields. ADIF 3.x has no standard
+		// tag for the other station's antenna, the district, the repeater pair or
+		// the paper card serial number, so they travel as APP_WAVELOG_*.
+		// Values may contain spaces and minus signs ("439.050 -5") - never trim
+		// them here; the length prefix must match the value byte for byte.
+		$line .= $this->getAdifFieldLine("APP_WAVELOG_RIG_ANT", $qso->{'COL_RIG_ANT'} ?? '');
+		$line .= $this->getAdifFieldLine("APP_WAVELOG_CN_DISTRICT", $qso->{'COL_CN_DISTRICT'} ?? '');
+		$line .= $this->getAdifFieldLine("APP_WAVELOG_RPT", $qso->{'COL_RPT'} ?? '');
+		$line .= $this->getAdifFieldLine("APP_WAVELOG_CTCSS", $qso->{'COL_CTCSS'} ?? '');
+		$line .= $this->getAdifFieldLine("APP_WAVELOG_CARD_NO", $qso->{'COL_CARD_NO'} ?? '');
+
 		$line .= $this->getAdifFieldLine("SIG", $qso->{'COL_SIG'});
 		$line .= $this->getAdifFieldLine("SIG_INFO", $qso->{'COL_SIG_INFO'});
 

@@ -418,7 +418,20 @@ class Logbook_model extends CI_Model {
 			'COL_NOTES' => trim($qso_data['notes'] ?? '') ?: NULL,
 			'COL_EMAIL' => $email ?? NULL,
 			'COL_REGION' => $region ?? NULL,
+			// China HAM Edition: both sides' equipment plus the Chinese QSL card fields.
+			'COL_RIG' => trim($qso_data['rig'] ?? '') ?: NULL,
+			'COL_RIG_ANT' => trim($qso_data['rig_ant'] ?? '') ?: NULL,
+			'COL_MY_ANTENNA' => trim($qso_data['my_antenna'] ?? '') ?: NULL,
+			'COL_CN_DISTRICT' => trim($qso_data['cn_district'] ?? '') ?: NULL,
+			'COL_RPT' => trim($qso_data['cn_rpt'] ?? '') ?: NULL,
+			'COL_CTCSS' => trim($qso_data['cn_ctcss'] ?? '') ?: NULL,
+			'COL_CARD_NO' => trim($qso_data['cn_card_no'] ?? '') ?: NULL,
 		);
+
+		// China HAM Edition: an explicitly entered RX power wins over the contest derived one
+		if (isset($qso_data['rx_pwr']) && $qso_data['rx_pwr'] !== '' && is_numeric($qso_data['rx_pwr'])) {
+			$data['COL_RX_PWR'] = round((float)$qso_data['rx_pwr'], 3);
+		}
 
 		$this->load->model('stations');
 		$station_id = $qso_data['station_profile'] ?? $this->stations->find_active();
@@ -475,7 +488,8 @@ class Logbook_model extends CI_Model {
 			$data['COL_MY_CNTY'] = strtoupper(trim($station['station_cnty']));
 			$data['COL_MY_CQ_ZONE'] = strtoupper(trim($station['station_cq']));
 			$data['COL_MY_ITU_ZONE'] = strtoupper(trim($station['station_itu']));
-			$data['COL_MY_RIG'] = trim($radio_name) ?? NULL;
+			// China HAM Edition: a manually entered rig name wins over the CAT/CAT-Web one
+			$data['COL_MY_RIG'] = (trim($qso_data['my_rig'] ?? '') !== '') ? trim($qso_data['my_rig']) : trim($radio_name);
 
 			// if there are any static map images for this station, remove them so they can be regenerated
 			$this->load->is_loaded('staticmap_model') ?: $this->load->model('staticmap_model');
@@ -2010,6 +2024,30 @@ class Logbook_model extends CI_Model {
 			'COL_EMAIL' => $email ?? '',
 			'COL_REGION' => $region ?? '',
 		);
+
+		// China HAM Edition: both sides' equipment + Chinese QSL card fields.
+		// Only overwrite when the caller actually submitted the field: the edit
+		// form always posts everything, while partial callers (API, quick edits)
+		// must not be able to silently wipe the device/card data.
+		$cn_ham_fields = array(
+			'COL_RIG' => 'rig',
+			'COL_RIG_ANT' => 'rig_ant',
+			'COL_MY_RIG' => 'my_rig',
+			'COL_MY_ANTENNA' => 'my_antenna',
+			'COL_CN_DISTRICT' => 'cn_district',
+			'COL_RPT' => 'cn_rpt',
+			'COL_CTCSS' => 'cn_ctcss',
+			'COL_CARD_NO' => 'cn_card_no',
+		);
+		foreach ($cn_ham_fields as $cn_col => $cn_post_key) {
+			$cn_value = $this->input->post($cn_post_key);
+			if ($cn_value !== null) {
+				$data[$cn_col] = trim($cn_value);
+			}
+		}
+		if ($this->input->post('rx_pwr') !== null) {
+			$data['COL_RX_PWR'] = is_numeric($this->input->post('rx_pwr')) ? round((float)$this->input->post('rx_pwr'), 3) : null;
+		}
 
 		if ($this->exists_hrdlog_credentials($data['station_id']) && !$qrz_modified) {
 			$data['COL_HRDLOG_QSO_UPLOAD_STATUS'] = 'M';
@@ -5180,6 +5218,22 @@ class Logbook_model extends CI_Model {
 
 
 	/*
+	 * China HAM Edition: read one of our application defined ADIF fields.
+	 *
+	 * The ADIF parser lowercases every tag, so `APP_WAVELOG_RIG_ANT` arrives as
+	 * `app_wavelog_rig_ant`. Other programs may use their own PROGRAMID, so a
+	 * couple of known prefixes are accepted as well.
+	 */
+	private function cn_ham_pick($record, $name) {
+		foreach (array('app_wavelog_', 'app_cnham_', 'app_wavelogcn_') as $prefix) {
+			if (!empty($record[$prefix . $name])) {
+				return trim($record[$prefix . $name]);
+			}
+		}
+		return '';
+	}
+
+	/*
      * $skipDuplicate - used in ADIF import to skip duplicates when importing QSOs
      * $markLoTW - used in ADIF import to mark QSOs as exported to LoTW when importing QSOs
      * $dxccAdif - used in ADIF import to determine if DXCC From ADIF is used, or if Wavelog should try to guess
@@ -5958,6 +6012,12 @@ class Logbook_model extends CI_Model {
 				'COL_REGION' => (!empty($record['region'])) ? $record['region'] : '',
 				'COL_RIG' => (!empty($record['rig'])) ? $record['rig'] : '',
 				'COL_RIG_INTL' => (!empty($record['rig_intl'])) ? $record['rig_intl'] : '',
+				// China HAM Edition (APP_WAVELOG_* / APP_CNHAM_* application defined fields)
+				'COL_RIG_ANT' => $this->cn_ham_pick($record, 'rig_ant'),
+				'COL_CN_DISTRICT' => $this->cn_ham_pick($record, 'cn_district'),
+				'COL_RPT' => $this->cn_ham_pick($record, 'rpt'),
+				'COL_CTCSS' => $this->cn_ham_pick($record, 'ctcss'),
+				'COL_CARD_NO' => $this->cn_ham_pick($record, 'card_no'),
 				'COL_RST_RCVD' => $rst_rx,
 				'COL_RST_SENT' => $rst_tx,
 				'COL_RX_PWR' => (is_numeric($rx_pwr) ? $rx_pwr : null),

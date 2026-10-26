@@ -331,7 +331,17 @@ class QSO extends CI_Controller {
 			'notes' => $this->input->post('notes', TRUE) ?? NULL,
 			'station_profile' => $this->input->post('station_profile', TRUE) ?? NULL,
 			'isSFLE' => $this->input->post('isSFLE', TRUE) ?? NULL,
-			'distance' => $this->input->post('distance', TRUE) ?? TRUE
+			'distance' => $this->input->post('distance', TRUE) ?? TRUE,
+			// China HAM Edition: both sides' equipment + Chinese QSL card fields
+			'rig' => $this->input->post('rig', TRUE) ?? NULL,
+			'rig_ant' => $this->input->post('rig_ant', TRUE) ?? NULL,
+			'my_rig' => $this->input->post('my_rig', TRUE) ?? NULL,
+			'my_antenna' => $this->input->post('my_antenna', TRUE) ?? NULL,
+			'rx_pwr' => $this->input->post('rx_pwr', TRUE) ?? NULL,
+			'cn_district' => $this->input->post('cn_district', TRUE) ?? NULL,
+			'cn_rpt' => $this->input->post('cn_rpt', TRUE) ?? NULL,
+			'cn_ctcss' => $this->input->post('cn_ctcss', TRUE) ?? NULL,
+			'cn_card_no' => $this->input->post('cn_card_no', TRUE) ?? NULL,
 		];
 
 		$result = $this->logbook_model->create_qso($qso_data, true, true);
