@@ -94,20 +94,23 @@ install/           独立安装器（不走 CI 路由）+ 我们的 _cli_install
 
 ## 5. 中国 HAM 版改造范围（当前阶段）
 
-### P0 双方设备
-- 新增列（迁移 308）：对方天线 `COL_RIG_ANT`、我方设备补充 `COL_MY_RADIO_MODEL`（若决定不依赖 CAT）、对方功率复用 `COL_RX_PWR`。
-- 录入/编辑表单加「双方设备」折叠块：我方 电台/天线/功率（默认取 station_profile）+ 对方 电台/天线/功率。
-- ADIF 双向：标准 `RIG` / `MY_ANTENNA` / `TX_PWR` / `RX_PWR` 保持原映射；对方天线走 `APP_WAVELOG_RIG_ANT`。
+> 完整需求、数据字典、验收标准、分期与待决策项见 **`docs/cn-ham/requirements.md`**。本节只留结论速记。
 
-### P0 中国卡片字段
-`COL_WX`（天气）、`COL_TEMP`（温度℃）、`COL_RPT`（中继/直频）、`COL_CARD_NO`（卡片编号）、`COL_QTH_CN`? 优先复用 `COL_STATE` 存省/直辖市，`COL_CITY` 存市。全部同步 ADIF `APP_WAVELOG_*` 扩展 + 导入导出。
+### P0 双方设备
+- 6 个位置里 **5 个上游已有列**（`COL_MY_RIG` / `COL_MY_ANTENNA` / `COL_TX_PWR` / `COL_RIG` / `COL_RX_PWR`），只是界面不给——P0 是补 UI + 打通四路径，不是加表。
+- 唯一新增：对方天线 `COL_RIG_ANT`（ADIF 无标准字段，走 `APP_WAVELOG_RIG_ANT`）。
+- 我方默认值拟加到 `station_profile`（`station_rig` / `station_antenna`），待决策 D3。
+
+### P0 中国卡片字段（迁移 308，7 列）
+`COL_RIG_ANT` / `COL_CN_DISTRICT` / `COL_WX` / `COL_WX_TEMP` / `COL_RPT` / `COL_CTCSS` / `COL_CARD_NO`
+- 省/直辖市**复用 `COL_STATE`**（ADIF 3.1.3 起支持中国两字母码，上游迁移 173 已有枚举），不要新建。
+- 天气/温度 **ADIF 没有标准字段**，全部 `APP_WAVELOG_*` 自定义；温度用 NULL 表示未填（`getAdifFieldLine` 会吞 0）。
 
 ### P0 口述 / 自动识别录入
-- `assets/js/sections/cn_qso_parser.js`：中文口述/自由文本 → 结构化字段（呼号、波段、模式、RST、QTH、网格、设备、天线、功率、中继、天气、温度）。规则优先，正则 + 单位归一（"五九"→59、"十四兆"→14MHz→20m、"单边带"→SSB、"一百瓦"→100W）。
-- `assets/js/sections/voice_entry.js`：Web Speech API（`webkitSpeechRecognition`, `lang='zh-CN'`）→ 中间结果实时解析 → 回填表单。
-- 回填**必须走既有事件链**（不是直接 `.val()`）：`#callsign` `.trigger('input')`+`blur` 触发呼号库查询，`#frequency` `.trigger('change')` 联动波段/CAT，`#band`/`.mode` `.trigger('change')`。若 `user_dxwaterfall_enable` 开着可复用 `DX_WATERFALL_UTILS.qsoForm.populateFromSpot()`。
-- 卡片照片识别：客户端 Tesseract.js（离线放 `assets/js/tesseract/`，需自带 wasm + chi_sim traineddata，约 10-15MB，不引 CDN）→ 文本 → 同一个 parser。识别结果**一律先进预览面板让用户确认**，禁止直接落库。
-- 服务端兜底（可选、配置开关）：`controllers/Autofill.php` + `libraries/` 做 LLM/ASR 代理，密钥走 config（不进仓库）。
+- 一套解析引擎 `assets/js/sections/cn_qso_parser.js`（纯函数、无 DOM 依赖），三个入口共用：文本粘贴 → 语音 → OCR。
+- `assets/js/sections/voice_entry.js`：Web Speech API 只做增强，**不作为依赖**（Chrome 在国内依赖 Google 语音服务，基本不可用）→ 三级降级：浏览器 API → 系统输入法语音 + 文本解析 → 本地 ASR 服务。
+- 回填**必须走既有事件链**（不是直接 `.val()`）：`#callsign` `.trigger('input')`+`blur` 触发呼号库查询，`#frequency` `.trigger('change')` 联动波段/CAT，`#band`/`.mode` `.trigger('change')`。
+- OCR 只承诺**印刷体**（Tesseract.js 离线），手写卡片不做承诺；识别结果必须进确认面板，禁止直接落库。
 
 ### 明确不做
 - 不改动上游 `system/` 框架代码（除非上游本身有补丁且无法绕开）。
