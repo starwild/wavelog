@@ -459,13 +459,35 @@
 
 	// ------------------------------------------------------------------ mobile page (M2)
 
-	function cnNowUtcParts() {
-		var d = new Date();
+	// "now" in Beijing wall-clock, for pre-filling the date/time inputs
+	function cnNowBjtParts() {
+		var d = new Date(Date.now() + 8 * 3600 * 1000);
 		var p = function (n) { return String(n).padStart(2, '0'); };
-		// same dd/mm/yy shape the desktop form posts (user_date_format)
+		return {
+			date: d.getUTCFullYear() + '-' + p(d.getUTCMonth() + 1) + '-' + p(d.getUTCDate()),
+			time: p(d.getUTCHours()) + ':' + p(d.getUTCMinutes())
+		};
+	}
+
+	// date "YYYY-MM-DD" + time "HH:MM" in the chosen timezone -> the
+	// dd/mm/yy + HH:MM (UTC) pair the save endpoint expects. Handles the
+	// midnight rollover (00:30 BJT is 16:30 UTC the day before).
+	function cnConvertToUtc(dateStr, timeStr, tz) {
+		var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(dateStr || ''));
+		var t = /^(\d{1,2}):(\d{2})/.exec(String(timeStr || ''));
+		if (!m || !t) {
+			return null;
+		}
+		var ms = Date.UTC(+m[1], +m[2] - 1, +m[3], +t[1], +t[2]);
+		if (tz === 'BJT') {
+			ms -= 8 * 3600 * 1000;
+		}
+		var d = new Date(ms);
+		var p = function (n) { return String(n).padStart(2, '0'); };
 		return {
 			date: p(d.getUTCDate()) + '/' + p(d.getUTCMonth() + 1) + '/' + String(d.getUTCFullYear()).slice(-2),
-			time: p(d.getUTCHours()) + ':' + p(d.getUTCMinutes())
+			time: p(d.getUTCHours()) + ':' + p(d.getUTCMinutes()),
+			hint: p(d.getUTCHours()) + ':' + p(d.getUTCMinutes()) + ' UTC / ' + p(d.getUTCDate()) + '-' + p(d.getUTCMonth() + 1)
 		};
 	}
 
@@ -554,9 +576,13 @@
 			}
 			$('#callsign').removeClass('is-invalid');
 
-			var parts = cnNowUtcParts();
-			$('#cn_start_date').val(parts.date);
-			$('#cn_start_time').val(parts.time);
+			var utc = cnConvertToUtc($('#cn_qso_date').val(), $('#cn_qso_time').val(), $('#cn_tz').val());
+			if (!utc) {
+				notify('\u65e5\u671f\u6216\u65f6\u95f4\u683c\u5f0f\u4e0d\u5bf9', false);
+				return;
+			}
+			$('#cn_start_date').val(utc.date);
+			$('#cn_start_time').val(utc.time);
 
 			var payload = {};
 			$('#cn_mobile_form').serializeArray().forEach(function (x) { payload[x.name] = x.value; });
@@ -587,6 +613,56 @@
 
 		// page load: put a sensible default frequency on the bar (band+mode default)
 		$('#band').trigger('change');
+
+		// time inputs: prefill "now" in Beijing time; live UTC hint on change
+		function refreshUtcHint() {
+			var utc = cnConvertToUtc($('#cn_qso_date').val(), $('#cn_qso_time').val(), $('#cn_tz').val());
+			$('#cn_utc_hint').text(utc ? ('\u4fdd\u5b58\u65f6\u81ea\u52a8\u8f6c\u6210 UTC\uff1a' + utc.hint)
+			                           : '\u4fdd\u5b58\u65f6\u81ea\u52a8\u8f6c\u6210 UTC\uff1b\u9009\u62e9\u300c\u5317\u4eac\u65f6\u95f4\u300d\u586b\u5f53\u5730\u65f6\u523b\u5373\u53ef\u3002');
+		}
+		var nowBjt = cnNowBjtParts();
+		$('#cn_qso_date').val(nowBjt.date);
+		$('#cn_qso_time').val(nowBjt.time);
+		refreshUtcHint();
+		$('#cn_qso_date, #cn_qso_time, #cn_tz').on('input change', refreshUtcHint);
+
+		// mode quick chips (FM / SSB / CW)
+		$(document).on('click', '.cn-mode-chip', function () {
+			var m = String($(this).data('mode'));
+			var $opt = $('#mode option[value="' + m + '"]');
+			if (!$opt.length) {
+				notify('\u6a21\u5f0f\u5217\u8868\u91cc\u6ca1\u6709 ' + m, false);
+				return;
+			}
+			$('#mode').val(m).trigger('change');
+		});
+
+		// RX frequency: mirrors TX until the user types one (simplex default)
+		var cnRxTouched = false;
+		$('#frequency_rx_mhz').on('input', function () {
+			cnRxTouched = true;
+			var v = parseFloat($(this).val());
+			$('#frequency_rx').val(isFinite(v) && v > 0 ? String(Math.round(v * 1000000)) : '');
+		});
+		$('#frequency').on('change', function () {
+			if (cnRxTouched) {
+				return;
+			}
+			var hz = parseFloat($(this).val());
+			var mhz = isFinite(hz) && hz > 0 ? (hz / 1000000).toFixed(3) : '';
+			$('#frequency_rx_mhz').val(mhz);
+			$('#frequency_rx').val(mhz ? String(Math.round(hz)) : '');
+		});
+
+		// my-station info line inside "more fields"
+		function renderMyInfo() {
+			var $opt = $('#stationProfile option:selected');
+			$('#cn_my_call').text($opt.data('call') || '-');
+			$('#cn_my_city').text($opt.data('city') || '-');
+			$('#cn_my_grid').text($opt.data('grid') || '-');
+		}
+		renderMyInfo();
+		$(document).on('change.cnenv', '#stationProfile', renderMyInfo);
 	}
 
 	function boot() {

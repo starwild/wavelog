@@ -259,6 +259,12 @@ class AdifHelper {
 		$line .= $this->getAdifFieldLine("APP_WAVELOG_RPT", $qso->{'COL_RPT'} ?? '');
 		$line .= $this->getAdifFieldLine("APP_WAVELOG_CTCSS", $qso->{'COL_CTCSS'} ?? '');
 		$line .= $this->getAdifFieldLine("APP_WAVELOG_CARD_NO", $qso->{'COL_CARD_NO'} ?? '');
+		// round 2 (309): symmetric weather / altitude / my remarks
+		$line .= $this->getAdifFieldLine("APP_WAVELOG_WEATHER", $qso->{'COL_WEATHER'} ?? '');
+		$line .= $this->getAdifFieldLine("APP_WAVELOG_ALT", $qso->{'COL_ALT'} ?? '');
+		$line .= $this->getAdifFieldLine("APP_WAVELOG_MY_WEATHER", $qso->{'COL_MY_WEATHER'} ?? '');
+		$line .= $this->getAdifFieldLine("APP_WAVELOG_MY_ALT", $qso->{'COL_MY_ALT'} ?? '');
+		$line .= $this->getAdifFieldLine("APP_WAVELOG_MY_COMMENT", $qso->{'COL_MY_COMMENT'} ?? '');
 
 		$line .= $this->getAdifFieldLine("SIG", $qso->{'COL_SIG'});
 		$line .= $this->getAdifFieldLine("SIG_INFO", $qso->{'COL_SIG_INFO'});

@@ -426,6 +426,12 @@ class Logbook_model extends CI_Model {
 			'COL_RPT' => trim($qso_data['cn_rpt'] ?? '') ?: NULL,
 			'COL_CTCSS' => trim($qso_data['cn_ctcss'] ?? '') ?: NULL,
 			'COL_CARD_NO' => trim($qso_data['cn_card_no'] ?? '') ?: NULL,
+			// round 2 (309): symmetric weather / altitude / my remarks
+			'COL_WEATHER' => trim($qso_data['weather'] ?? '') ?: NULL,
+			'COL_ALT' => trim($qso_data['alt'] ?? '') ?: NULL,
+			'COL_MY_WEATHER' => trim($qso_data['my_weather'] ?? '') ?: NULL,
+			'COL_MY_ALT' => trim($qso_data['my_alt'] ?? '') ?: NULL,
+			'COL_MY_COMMENT' => trim($qso_data['my_comment'] ?? '') ?: NULL,
 		);
 
 		// China HAM Edition: an explicitly entered RX power wins over the contest derived one
@@ -2038,6 +2044,11 @@ class Logbook_model extends CI_Model {
 			'COL_RPT' => 'cn_rpt',
 			'COL_CTCSS' => 'cn_ctcss',
 			'COL_CARD_NO' => 'cn_card_no',
+			'COL_WEATHER' => 'weather',
+			'COL_ALT' => 'alt',
+			'COL_MY_WEATHER' => 'my_weather',
+			'COL_MY_ALT' => 'my_alt',
+			'COL_MY_COMMENT' => 'my_comment',
 		);
 		foreach ($cn_ham_fields as $cn_col => $cn_post_key) {
 			$cn_value = $this->input->post($cn_post_key);
@@ -6087,6 +6098,11 @@ class Logbook_model extends CI_Model {
 				'COL_RPT' => $this->cn_ham_pick($record, 'rpt'),
 				'COL_CTCSS' => $this->cn_ham_pick($record, 'ctcss'),
 				'COL_CARD_NO' => $this->cn_ham_pick($record, 'card_no'),
+				'COL_WEATHER' => $this->cn_ham_pick($record, 'weather'),
+				'COL_ALT' => $this->cn_ham_pick($record, 'alt'),
+				'COL_MY_WEATHER' => $this->cn_ham_pick($record, 'my_weather'),
+				'COL_MY_ALT' => $this->cn_ham_pick($record, 'my_alt'),
+				'COL_MY_COMMENT' => $this->cn_ham_pick($record, 'my_comment'),
 				'COL_RST_RCVD' => $rst_rx,
 				'COL_RST_SENT' => $rst_tx,
 				'COL_RX_PWR' => (is_numeric($rx_pwr) ? $rx_pwr : null),

@@ -32,6 +32,11 @@ $cn_labels = array(
 	'cn_ctcss'    => __('亚音'),
 	'cn_district' => __('区县'),
 	'cn_card_no'  => __('卡片编号'),
+	'weather'     => __('对方天气'),
+	'alt'         => __('对方海拔 (m)'),
+	'my_weather'  => __('我方天气'),
+	'my_alt'      => __('我方海拔 (m)'),
+	'my_comment'  => __('我方备注'),
 );
 ?>
 
@@ -95,6 +100,38 @@ $cn_labels = array(
     <small class="form-text text-muted"><?= __('中继写「下行频率 差频」，如 439.050 -5；亚音写 T88.5 / TSQ 88.5 / DCS 023。') ?></small>
   </div>
 </div>
+
+<div class="card mt-2 cn-ham-card">
+  <button type="button" class="card-header d-flex justify-content-between align-items-center w-100 text-start" data-bs-toggle="collapse" data-bs-target="#cn-ham-env" aria-expanded="false" aria-controls="cn-ham-env" style="cursor: pointer;">
+    <span class="card-title mb-0"><i class="fas fa-cloud-sun me-1"></i><?= __('环境与备注（双方）') ?></span>
+    <span aria-hidden="true"><i class="fas fa-up-down"></i></span>
+  </button>
+  <div class="card-body collapse" id="cn-ham-env">
+    <div class="row">
+      <div class="col-sm-6 mb-3">
+        <label for="weather" class="form-label"><?= $cn_labels['weather']; ?></label>
+        <input type="text" class="form-control form-control-sm" name="weather" id="weather" maxlength="64" value="<?= $cn_val('COL_WEATHER'); ?>" placeholder="例如：晴 · 微风">
+      </div>
+      <div class="col-sm-6 mb-3">
+        <label for="alt" class="form-label"><?= $cn_labels['alt']; ?></label>
+        <input type="text" class="form-control form-control-sm" name="alt" id="alt" maxlength="16" value="<?= $cn_val('COL_ALT'); ?>" placeholder="例如：850">
+      </div>
+      <div class="col-sm-6 mb-3">
+        <label for="my_weather" class="form-label"><?= $cn_labels['my_weather']; ?></label>
+        <input type="text" class="form-control form-control-sm" name="my_weather" id="my_weather" maxlength="64" value="<?= $cn_val('COL_MY_WEATHER'); ?>" placeholder="例如：多云 · 3 级风">
+      </div>
+      <div class="col-sm-6 mb-3">
+        <label for="my_alt" class="form-label"><?= $cn_labels['my_alt']; ?></label>
+        <input type="text" class="form-control form-control-sm" name="my_alt" id="my_alt" maxlength="16" value="<?= $cn_val('COL_MY_ALT'); ?>" placeholder="例如：1200（山顶）">
+      </div>
+      <div class="col-sm-12 mb-3">
+        <label for="my_comment" class="form-label"><?= $cn_labels['my_comment']; ?></label>
+        <input type="text" class="form-control form-control-sm" name="my_comment" id="my_comment" maxlength="255" value="<?= $cn_val('COL_MY_COMMENT'); ?>" placeholder="写给自己看的：设备状态、信号变化等">
+      </div>
+    </div>
+    <small class="form-text text-muted"><?= __('天气/海拔按场次记录。对方备注写在上方的「备注」里。') ?></small>
+  </div>
+</div>
 <?php } else { ?>
 <div class="card mt-3 cn-ham-card">
   <button type="button" class="card-header d-flex justify-content-between align-items-center w-100 text-start" data-bs-toggle="collapse" data-bs-target="#cn-ham-equipment-edit" aria-expanded="false" aria-controls="cn-ham-equipment-edit" style="cursor: pointer;">
@@ -151,6 +188,38 @@ $cn_labels = array(
         <input type="text" class="form-control" name="cn_card_no" id="cn_card_no_edit" maxlength="64" value="<?= $cn_val('COL_CARD_NO'); ?>">
       </div>
     </div>
+  </div>
+</div>
+
+<div class="card mt-2 cn-ham-card">
+  <button type="button" class="card-header d-flex justify-content-between align-items-center w-100 text-start" data-bs-toggle="collapse" data-bs-target="#cn-ham-env_edit" aria-expanded="false" aria-controls="cn-ham-env_edit" style="cursor: pointer;">
+    <span class="card-title mb-0"><i class="fas fa-cloud-sun me-1"></i><?= __('环境与备注（双方）') ?></span>
+    <span aria-hidden="true"><i class="fas fa-up-down"></i></span>
+  </button>
+  <div class="card-body collapse" id="cn-ham-env_edit">
+    <div class="row">
+      <div class="col-sm-6 mb-3">
+        <label for="weather_edit" class="form-label"><?= $cn_labels['weather']; ?></label>
+        <input type="text" class="form-control" name="weather" id="weather_edit" maxlength="64" value="<?= $cn_val('COL_WEATHER'); ?>" placeholder="例如：晴 · 微风">
+      </div>
+      <div class="col-sm-6 mb-3">
+        <label for="alt_edit" class="form-label"><?= $cn_labels['alt']; ?></label>
+        <input type="text" class="form-control" name="alt" id="alt_edit" maxlength="16" value="<?= $cn_val('COL_ALT'); ?>" placeholder="例如：850">
+      </div>
+      <div class="col-sm-6 mb-3">
+        <label for="my_weather_edit" class="form-label"><?= $cn_labels['my_weather']; ?></label>
+        <input type="text" class="form-control" name="my_weather" id="my_weather_edit" maxlength="64" value="<?= $cn_val('COL_MY_WEATHER'); ?>" placeholder="例如：多云 · 3 级风">
+      </div>
+      <div class="col-sm-6 mb-3">
+        <label for="my_alt_edit" class="form-label"><?= $cn_labels['my_alt']; ?></label>
+        <input type="text" class="form-control" name="my_alt" id="my_alt_edit" maxlength="16" value="<?= $cn_val('COL_MY_ALT'); ?>" placeholder="例如：1200（山顶）">
+      </div>
+      <div class="col-sm-12 mb-3">
+        <label for="my_comment_edit" class="form-label"><?= $cn_labels['my_comment']; ?></label>
+        <input type="text" class="form-control" name="my_comment" id="my_comment_edit" maxlength="255" value="<?= $cn_val('COL_MY_COMMENT'); ?>" placeholder="写给自己看的：设备状态、信号变化等">
+      </div>
+    </div>
+    <small class="form-text text-muted"><?= __('天气/海拔按场次记录。对方备注写在上方的「备注」里。') ?></small>
   </div>
 </div>
 <?php } ?>

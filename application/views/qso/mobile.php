@@ -3,13 +3,18 @@
  * China HAM Edition - mobile quick log view.
  *
  * Field names are IDENTICAL to the desktop form (callsign/band/mode/
- * freq_display/rst_sent/rst_rcvd/...) because it posts to the same
- * POST /index.php/qso?manual=1 endpoint. The "more fields" block is the
+ * freq_display/freq_display_rx/rst_sent/rst_rcvd/...) because it posts to the
+ * same POST /index.php/qso?manual=1 endpoint. The "more fields" block is the
  * shared cn_ham_fields partial - never re-declare those inputs here.
  *
  * qso.js is NOT loaded on this page (it is 3600 lines and pulls the map).
- * The small behaviours this page needs (RST defaults, band/freq sync, save,
- * lookup) live in cn_quickfill.js instead.
+ * The behaviours this page needs (RST defaults, band/freq sync, BJT/UTC time
+ * conversion, save, lookup) live in cn_quickfill.js instead.
+ *
+ * Time: the user may enter Beijing time or UTC (cn_tz selector); it is
+ * converted to UTC at save. The date field is interpreted in the SAME
+ * timezone as the time field, so 00:30 BJT correctly rolls back to the
+ * previous UTC day.
  */
 $manual_mode = 1;
 ?>
@@ -20,6 +25,29 @@ $manual_mode = 1;
 
     <div class="card mb-3">
       <div class="card-body">
+
+        <div class="row g-2">
+          <div class="col-4">
+            <label class="form-label small mb-1" for="cn_qso_date"><?= __('日期') ?></label>
+            <input type="date" class="form-control" id="cn_qso_date">
+          </div>
+          <div class="col-4">
+            <label class="form-label small mb-1" for="cn_qso_time"><?= __('时间') ?></label>
+            <input type="time" class="form-control" id="cn_qso_time">
+          </div>
+          <div class="col-4">
+            <label class="form-label small mb-1" for="cn_tz"><?= __('时区') ?></label>
+            <select id="cn_tz" class="form-select">
+              <option value="BJT" selected><?= __('北京时间') ?></option>
+              <option value="UTC">UTC</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <div class="form-text mb-0" id="cn_utc_hint"><?= __('保存时自动转成 UTC；选择「北京时间」填当地时刻即可。') ?></div>
+          </div>
+        </div>
+
+        <hr class="my-3">
 
         <div class="row g-2">
           <div class="col-6">
@@ -35,6 +63,14 @@ $manual_mode = 1;
             </select>
           </div>
           <div class="col-6">
+            <label class="form-label small mb-1">&nbsp;</label>
+            <div class="btn-group w-100" role="group">
+              <?php foreach (array('FM', 'SSB', 'CW') as $m) { ?>
+              <button type="button" class="btn btn-sm btn-outline-secondary cn-mode-chip" data-mode="<?php echo $m; ?>"><?php echo $m; ?></button>
+              <?php } ?>
+            </div>
+          </div>
+          <div class="col-6">
             <label class="form-label small mb-1" for="band"><?= __("Band"); ?></label>
             <select id="band" class="form-select" name="band">
               <?php foreach ($bands as $key => $bandgroup) {
@@ -46,12 +82,17 @@ $manual_mode = 1;
               } ?>
             </select>
           </div>
-          <div class="col-7">
-            <label class="form-label small mb-1" for="frequency"><?= __("Frequency"); ?> (MHz)</label>
-            <input type="number" step="0.001" min="0" class="form-control" id="frequency_mhz" inputmode="decimal">
+          <div class="col-6">
+            <label class="form-label small mb-1" for="frequency_mhz"><?= __("Frequency"); ?> (MHz)</label>
+            <input type="number" step="0.001" min="0" class="form-control" id="frequency_mhz" inputmode="decimal" placeholder="439.050">
             <input type="hidden" id="frequency" name="freq_display" value="">
           </div>
-          <div class="col-5">
+          <div class="col-6">
+            <label class="form-label small mb-1" for="frequency_rx_mhz"><?= __('收信频率'); ?> (MHz)</label>
+            <input type="number" step="0.001" min="0" class="form-control" id="frequency_rx_mhz" inputmode="decimal" placeholder="<?= __('同发射') ?>">
+            <input type="hidden" id="frequency_rx" name="freq_display_rx" value="">
+          </div>
+          <div class="col-6">
             <label class="form-label small mb-1" for="stationProfile"><?= __("Station Location"); ?></label>
             <select id="stationProfile" class="form-select" name="station_profile">
               <?php foreach ($stations->result() as $stationrow) { ?>
@@ -99,7 +140,7 @@ $manual_mode = 1;
         </div>
 
         <p class="mb-0">
-          <a class="small" data-bs-toggle="collapse" href="#cn_mobile_more" role="button" aria-expanded="false" aria-controls="cn_mobile_more" id="cn_mobile_more_toggle"><?= __('更多字段（对方/我的设备 · 中继 · 备注）') ?> ▾</a>
+          <a class="small" data-bs-toggle="collapse" href="#cn_mobile_more" role="button" aria-expanded="false" aria-controls="cn_mobile_more" id="cn_mobile_more_toggle"><?= __('更多字段（双方设备 · 天气/海拔 · 中继 · 备注）') ?> ▾</a>
         </p>
       </div>
     </div>
@@ -108,6 +149,22 @@ $manual_mode = 1;
       <div class="card">
         <div class="card-body">
           <?php $this->load->view('qso/components/cn_ham_fields'); ?>
+
+          <div class="row mt-2">
+            <div class="col-sm-6 mb-3">
+              <label for="transmit_power" class="form-label"><?= __('我方功率 (W)') ?></label>
+              <input type="number" step="0.001" inputmode="decimal" class="form-control" name="transmit_power" id="transmit_power">
+            </div>
+            <div class="col-sm-6 mb-3">
+              <label for="comment" class="form-label"><?= __('备注（对方）') ?></label>
+              <input type="text" class="form-control" name="comment" id="comment" maxlength="255">
+            </div>
+          </div>
+
+          <div class="small text-muted">
+            <?= __('我方') ?>：<span id="cn_my_call"></span> · <span id="cn_my_city"></span> · <span id="cn_my_grid"></span>
+            （<?= __('在台站位置里维护') ?>）
+          </div>
         </div>
       </div>
     </div>

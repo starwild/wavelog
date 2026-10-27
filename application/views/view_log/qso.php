@@ -673,6 +673,27 @@
                     </tr>
                     <?php } ?>
 
+                    <?php if (!empty($row->COL_MY_WEATHER)) { ?>
+                    <tr>
+                        <th scope="row"><?= __('我方天气'); ?></th>
+                        <td><?php echo html_escape($row->COL_MY_WEATHER); ?></td>
+                    </tr>
+                    <?php } ?>
+
+                    <?php if (!empty($row->COL_MY_ALT)) { ?>
+                    <tr>
+                        <th scope="row"><?= __('我方海拔 (m)'); ?></th>
+                        <td><?php echo html_escape($row->COL_MY_ALT); ?></td>
+                    </tr>
+                    <?php } ?>
+
+                    <?php if (!empty($row->COL_MY_COMMENT)) { ?>
+                    <tr>
+                        <th scope="row"><?= __('我方备注'); ?></th>
+                        <td><?php echo html_escape($row->COL_MY_COMMENT); ?></td>
+                    </tr>
+                    <?php } ?>
+
                     <?php if (!empty($row->COL_RIG)) { ?>
                     <tr>
                         <th scope="row"><?= __('对方电台'); ?></th>
@@ -691,6 +712,20 @@
                     <tr>
                         <th scope="row"><?= __('对方功率 (W)'); ?></th>
                         <td><?php echo html_escape($row->COL_RX_PWR); ?> W</td>
+                    </tr>
+                    <?php } ?>
+
+                    <?php if (!empty($row->COL_WEATHER)) { ?>
+                    <tr>
+                        <th scope="row"><?= __('对方天气'); ?></th>
+                        <td><?php echo html_escape($row->COL_WEATHER); ?></td>
+                    </tr>
+                    <?php } ?>
+
+                    <?php if (!empty($row->COL_ALT)) { ?>
+                    <tr>
+                        <th scope="row"><?= __('对方海拔 (m)'); ?></th>
+                        <td><?php echo html_escape($row->COL_ALT); ?></td>
                     </tr>
                     <?php } ?>
 

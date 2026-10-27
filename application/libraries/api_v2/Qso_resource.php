@@ -793,6 +793,11 @@ class Qso_resource extends Api_v2_resource {
 			'cn_ctcss'    => ['COL_CTCSS', false],
 			'cn_district' => ['COL_CN_DISTRICT', false],
 			'cn_card_no'  => ['COL_CARD_NO', false],
+			'weather'     => ['COL_WEATHER', false],
+			'alt'         => ['COL_ALT', false],
+			'my_weather'  => ['COL_MY_WEATHER', false],
+			'my_alt'      => ['COL_MY_ALT', false],
+			'my_comment'  => ['COL_MY_COMMENT', false],
 		];
 	}
 

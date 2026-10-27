@@ -340,6 +340,11 @@ class QSO extends CI_Controller {
 			'rx_pwr' => $this->input->post('rx_pwr', TRUE) ?? NULL,
 			'cn_district' => $this->input->post('cn_district', TRUE) ?? NULL,
 			'cn_rpt' => $this->input->post('cn_rpt', TRUE) ?? NULL,
+			'weather' => $this->input->post('weather', TRUE) ?? NULL,
+			'alt' => $this->input->post('alt', TRUE) ?? NULL,
+			'my_weather' => $this->input->post('my_weather', TRUE) ?? NULL,
+			'my_alt' => $this->input->post('my_alt', TRUE) ?? NULL,
+			'my_comment' => $this->input->post('my_comment', TRUE) ?? NULL,
 			'cn_ctcss' => $this->input->post('cn_ctcss', TRUE) ?? NULL,
 			'cn_card_no' => $this->input->post('cn_card_no', TRUE) ?? NULL,
 		];
