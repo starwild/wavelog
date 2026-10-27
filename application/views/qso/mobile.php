@@ -14,12 +14,12 @@
  */
 $manual_mode = 1;
 ?>
-<div class="container-fluid">
+<div class="container qso_panel" id="main-content">
   <form id="cn_mobile_form" method="post" action="<?php echo site_url('qso'); ?>?manual=<?php echo $manual_mode; ?>" autocomplete="off">
     <?php $this->load->view('qso/components/env_bar'); ?>
 
-    <div class="row">
-      <div class="col-lg-7">
+    <div class="row qsopane">
+      <div class="col-sm-5">
 
         <div class="card mb-3">
           <div class="card-body">
@@ -175,13 +175,11 @@ $manual_mode = 1;
         </div>
 
       </div>
-      <div class="col-lg-5">
+      <div class="col-sm-7">
 
-        <div class="card mb-3">
-          <div class="card-header"><h4 class="card-title mb-0" style="font-size:16px;font-weight:bold;"><?= __('台站位置') ?></h4></div>
-          <div class="card-body p-0">
-            <div id="cn_map" data-lat="<?php echo html_escape($lat); ?>" data-lng="<?php echo html_escape($lng); ?>" style="height:300px;width:100%;"></div>
-          </div>
+        <!-- QSO Map (same look as official Post QSO) -->
+        <div class="card qso-map mb-3">
+          <div id="cn_map" data-lat="<?php echo html_escape($lat); ?>" data-lng="<?php echo html_escape($lng); ?>" style="width:100%;height:200px;"></div>
         </div>
 
         <div class="card previous-qsos">
