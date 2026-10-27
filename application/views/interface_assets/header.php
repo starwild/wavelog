@@ -139,7 +139,7 @@
 								<li><hr class="dropdown-divider"></li>
 								<li><a class="dropdown-item" href="<?php echo site_url('simplefle'); ?>" title="Simple Fast Log Entry"><i class="fas fa-list"></i> <?= __("Simple Fast Log Entry"); ?></a></li>
 								<li><hr class="dropdown-divider"></li>
-								<li><a class="dropdown-item" href="<?php echo site_url('qso_mobile'); ?>" title="<?= __("手机快速录入"); ?>"><i class="fas fa-mobile-screen"></i> <?= __("手机快速录入"); ?></a></li>
+								<li><a class="dropdown-item" href="<?php echo site_url('qso_mobile'); ?>" title="<?= __("快速录入"); ?>"><i class="fas fa-mobile-screen"></i> <?= __("快速录入"); ?></a></li>
 							</ul>
 						</li>
 

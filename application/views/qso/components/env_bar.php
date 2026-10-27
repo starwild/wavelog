@@ -15,9 +15,8 @@ $isMobile = ($this->uri->segment(1) === 'qso_mobile');
       <select id="cn_scene_select" class="form-select form-select-sm" style="width:auto;max-width:220px;" aria-label="<?= __('场景') ?>">
         <option value=""><?= __('场景：未选择') ?></option>
       </select>
-      <?php if (!$isMobile) { ?>
-      <a class="btn btn-sm btn-outline-secondary text-nowrap" href="<?= site_url('qso_mobile') ?>" target="_blank" rel="noopener" title="<?= __('手机上单手记通联') ?>"><?= __('手机快速录入') ?></a>
-      <?php } ?>
+      <button type="button" class="btn btn-sm btn-outline-secondary text-nowrap" id="cn_fill_last" title="<?= __('把上一条通联的频率/模式等带进来，不动呼号') ?>"><?= __('填入上一次通联') ?></button>
+      <button type="button" class="btn btn-sm btn-outline-secondary text-nowrap" id="cn_tpl_manage" title="<?= __('应用 / 保存 / 删除场景模板') ?>"><?= __('管理模板') ?></button>
     </div>
   </div>
 </div>

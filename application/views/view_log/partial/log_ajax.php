@@ -606,7 +606,7 @@ function getDistance($distance) {
                         <div class="dropdown-menu menuOnResultTab" data-bs-toggle="popover" data-bs-placement="auto" data-qsoid="qso_<?php echo $row->COL_PRIMARY_KEY; ?>">
                             <?php if (clubaccess_check(3, $row->COL_PRIMARY_KEY)) { ?>
                             <button type="button" class="dropdown-item" id="edit_qso" onclick="qso_edit(<?php echo $row->COL_PRIMARY_KEY; ?>)"><i class="fas fa-edit" aria-hidden="true"></i> <?= __("Edit QSO"); ?></button>
-                            <button type="button" class="dropdown-item cn-copy-qso" onclick="location.href='<?php echo site_url('qso'); ?>?manual=1&amp;from=<?php echo (int) $row->COL_PRIMARY_KEY; ?>'"><i class="fas fa-clone" aria-hidden="true"></i> <?= __('复制到新 QSO') ?></button>
+                            <button type="button" class="dropdown-item cn-copy-qso" onclick="location.href='<?php echo site_url('qso_mobile'); ?>?from=<?php echo (int) $row->COL_PRIMARY_KEY; ?>'"><i class="fas fa-clone" aria-hidden="true"></i> <?= __('复制到新 QSO') ?></button>
                             <?php } ?>
 
                             <?php if (clubaccess_check(9)) { ?>

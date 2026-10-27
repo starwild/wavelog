@@ -604,6 +604,9 @@
 					$('.cn-rst-btn[data-target="rst_sent"][data-rst="' + $('#rst_sent').val() + '"]').addClass('active');
 					$('.cn-rst-btn[data-target="rst_rcvd"][data-rst="' + $('#rst_rcvd').val() + '"]').addClass('active');
 					renderEnvBar();
+					if (typeof cnLoadPastContacts === 'function') {
+						cnLoadPastContacts();
+					}
 					$('#callsign').trigger('focus');
 				})
 				.fail(function () {
@@ -663,6 +666,39 @@
 		}
 		renderMyInfo();
 		$(document).on('change.cnenv', '#stationProfile', renderMyInfo);
+	}
+
+	/**
+	 * Quick page extras: the small map (right column) and the Previous
+	 * Contacts table. Both reuse upstream building blocks - the tile server
+	 * globals from footer.php and the component_past_contacts fragment - so
+	 * the quick page looks like a lighter Post QSO without loading qso.js.
+	 */
+	function bootQuickExtras() {
+		var $map = $('#cn_map');
+		if ($map.length && typeof L !== 'undefined') {
+			var lat = parseFloat($map.data('lat'));
+			var lng = parseFloat($map.data('lng'));
+			if (isFinite(lat) && isFinite(lng)) {
+				var m = L.map('cn_map', { minZoom: 1, maxZoom: 18 }).setView([lat, lng], 8);
+				L.tileLayer(window.option_map_tile_server, {
+					attribution: window.option_map_tile_server_copyright || '',
+					subdomains: window.option_map_tile_subdomains || 'abc'
+				}).addTo(m);
+				L.marker([lat, lng]).addTo(m);
+			}
+		}
+
+		window.cnLoadPastContacts = function () {
+			var $t = $('#qso-last-table');
+			if (!$t.length) {
+				return;
+			}
+			$.get($t.data('past-contacts-url'), function (html) {
+				$t.html(html);
+			});
+		};
+		cnLoadPastContacts();
 	}
 
 	function boot() {
@@ -731,6 +767,7 @@
 		bindEnvBar();
 		renderSceneSelect();
 		bootMobile();
+		bootQuickExtras();
 
 		// qso?manual=1&from=<pk>  -> fill on load. Defer so qso.js's own
 		// document.ready (script loaded before this one) has finished binding.

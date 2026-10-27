@@ -88,7 +88,6 @@ if (typeof window.DX_WATERFALL_FIELD_MAP === 'undefined') {
     <div class="card">
 
     <form id="qso_input" method="post" action="<?php echo site_url('qso') . "?manual=" . $manual_mode; ?>" name="qsos" autocomplete="off" onReset="resetTimers(<?php echo $manual_mode; ?>);">
-      <?php $this->load->view('qso/components/env_bar'); ?>
 
       <div class="card-header">
         <ul style="font-size: 15px;" class="nav nav-tabs card-header-tabs pull-right"  id="myTab" role="tablist">
@@ -145,7 +144,7 @@ if (typeof window.DX_WATERFALL_FIELD_MAP === 'undefined') {
 				   	  if ($stations !== FALSE) {
                       foreach ($stations->result() as $stationrow) {
                 ?>
-                <option data-call="<?php echo html_escape($stationrow->station_callsign); ?>" data-city="<?php echo html_escape($stationrow->station_city); ?>" data-grid="<?php echo html_escape($stationrow->station_gridsquare); ?>" data-power="<?php echo html_escape($stationrow->station_power); ?>" value="<?php echo $stationrow->station_id; ?>" <?php if($active_station_profile == $stationrow->station_id) { echo "selected=\"selected\""; $power = $stationrow->station_power; $station_callsign = $stationrow->station_callsign; } ?>><?php echo $stationrow->station_profile_name; ?></option>
+                <option value="<?php echo $stationrow->station_id; ?>" <?php if($active_station_profile == $stationrow->station_id) { echo "selected=\"selected\""; $power = $stationrow->station_power; $station_callsign = $stationrow->station_callsign; } ?>><?php echo $stationrow->station_profile_name; ?></option>
                 <?php } } ?>
               </select>
             </div>
@@ -410,7 +409,7 @@ if (typeof window.DX_WATERFALL_FIELD_MAP === 'undefined') {
 				   if ($stations !== FALSE) {
                       foreach ($stations->result() as $stationrow) {
                 ?>
-                <option data-call="<?php echo html_escape($stationrow->station_callsign); ?>" data-city="<?php echo html_escape($stationrow->station_city); ?>" data-grid="<?php echo html_escape($stationrow->station_gridsquare); ?>" data-power="<?php echo html_escape($stationrow->station_power); ?>" value="<?php echo $stationrow->station_id; ?>" <?php if($active_station_profile == $stationrow->station_id) { echo "selected=\"selected\""; $power = $stationrow->station_power; $station_callsign = $stationrow->station_callsign; } ?>><?php echo $stationrow->station_profile_name; ?></option>
+                <option value="<?php echo $stationrow->station_id; ?>" <?php if($active_station_profile == $stationrow->station_id) { echo "selected=\"selected\""; $power = $stationrow->station_power; $station_callsign = $stationrow->station_callsign; } ?>><?php echo $stationrow->station_profile_name; ?></option>
                 <?php } ?>
               </select>
             </div>
@@ -761,13 +760,6 @@ if (typeof window.DX_WATERFALL_FIELD_MAP === 'undefined') {
         <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" aria-label="<?= __("More options"); ?>"></button>
         <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                 <li><button type="button" class="dropdown-item" id="btn_fullreset"><?= __("Reset to Default"); ?></button></li>
-                <li><button type="button" class="dropdown-item" id="cn_fill_last"><i class="fas fa-clock-rotate-left me-1"></i><?= __('填入上一次通联') ?></button></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><h6 class="dropdown-header"><?= __('通联模板') ?></h6></li>
-                <li><ul class="list-unstyled mb-0" id="cn_tpl_menu"></ul></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><button type="button" class="dropdown-item" id="cn_tpl_save"><i class="fas fa-floppy-disk me-1"></i><?= __('保存当前为模板…') ?></button></li>
-                <li><button type="button" class="dropdown-item" id="cn_tpl_manage"><i class="fas fa-table-list me-1"></i><?= __('管理模板…') ?></button></li>
             </ul>
         </div>
         <button tabindex="21" type="submit" id="saveQso" name="saveQso" class="btn btn-primary"><i class="fas fa-save"></i> <?= __("Save QSO"); ?></button>
@@ -938,7 +930,6 @@ if (typeof window.DX_WATERFALL_FIELD_MAP === 'undefined') {
 </div>
 
 <?php $this->load->view('qso/components/fav_modal'); ?>
-<?php $this->load->view('qso/components/qso_templates_modal'); ?>
 
 <script>
 	var station_callsign = "<?php echo $station_callsign; ?>";

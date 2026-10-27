@@ -25,12 +25,14 @@ class Qso_mobile extends CI_Controller {
 		$this->load->model('stations');
 		$this->load->model('usermodes');
 		$this->load->model('bands');
+		$this->load->library('qra');
 
 		$data['page_title'] = __("Quick Log");
 		$data['modes'] = $this->usermodes->active();
 		$data['bands'] = $this->bands->get_user_bands_for_qso_entry();
 		$data['stations'] = $this->stations->all_of_user();
 		$data['active_station_profile'] = $this->stations->find_active();
+		[$data['lat'], $data['lng']] = $this->qra->qra2latlong($this->stations->gridsquare_from_station($this->stations->find_active()));
 
 		$footerData = array();
 		$footerData['scripts'] = array('assets/js/sections/cn_quickfill.js');
