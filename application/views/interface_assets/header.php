@@ -138,6 +138,8 @@
 								<li><a class="dropdown-item" href="<?php echo site_url('qso?manual=1'); ?>" title="Log QSO made in the past"><i class="fas fa-list"></i> <?= __("Post QSO"); ?></a></li>
 								<li><hr class="dropdown-divider"></li>
 								<li><a class="dropdown-item" href="<?php echo site_url('simplefle'); ?>" title="Simple Fast Log Entry"><i class="fas fa-list"></i> <?= __("Simple Fast Log Entry"); ?></a></li>
+								<li><hr class="dropdown-divider"></li>
+								<li><a class="dropdown-item" href="<?php echo site_url('qso_mobile'); ?>" title="<?= __("手机快速录入"); ?>"><i class="fas fa-mobile-screen"></i> <?= __("手机快速录入"); ?></a></li>
 							</ul>
 						</li>
 
