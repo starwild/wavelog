@@ -1108,6 +1108,7 @@ $($('#callsign')).on('keypress',function(e) {
 
 <script src="<?php echo $this->paths->cache_buster('/assets/js/sections/callsign_validation.js'); ?>"></script>
 <script src="<?php echo $this->paths->cache_buster('/assets/js/sections/qso.js'); ?>"></script>
+<script src="<?php echo $this->paths->cache_buster('/assets/js/sections/cn_quickfill.js'); ?>"></script>
 <script src="<?php echo $this->paths->cache_buster('/assets/js/sections/satellite_functions.js'); ?>"></script>
 <script src="<?php echo $this->paths->cache_buster('/assets/js/bootstrap-multiselect.js'); ?>"></script>
 <?php if ($this->session->userdata('isWinkeyEnabled')) { ?>

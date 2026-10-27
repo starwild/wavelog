@@ -2931,6 +2931,53 @@ class Logbook_model extends CI_Model {
 		return (int) $this->db->query($sql, $bindings)->row()->cnt;
 	}
 
+	/*
+	 * China HAM Edition - quick fill support.
+	 *
+	 * Returns the most recent QSO of the given stations, but only the columns
+	 * that are safe to prefill into a new QSO (link parameters + my own gear).
+	 * The counterpart's data (callsign, RST, QTH, grid, their antenna, ...) is
+	 * deliberately NOT selected: the caller can not leak what it never gets.
+	 *
+	 * $station_ids is the comma separated list produced by
+	 * Stations::all_station_ids_of_user() - it is re-parsed into ints here so a
+	 * malformed value can never reach the SQL.
+	 */
+	function get_last_qso($station_ids = '', $callsign = null, $id = null) {
+		$ids = array_filter(array_map('intval', explode(',', (string) $station_ids)), function ($v) {
+			return $v > 0;
+		});
+		if (empty($ids)) {
+			return null;
+		}
+
+		$table = $this->config->item('table_name');
+		$sql = "SELECT COL_PRIMARY_KEY, COL_TIME_ON, COL_CALL, station_id,
+					COL_BAND, COL_BAND_RX, COL_FREQ, COL_FREQ_RX,
+					COL_MODE, COL_PROP_MODE, COL_SAT_NAME, COL_SAT_MODE,
+					COL_TX_PWR, COL_MY_RIG, COL_MY_ANTENNA, COL_RPT, COL_CTCSS
+				FROM " . $table . "
+				WHERE station_id IN (" . implode(',', $ids) . ")";
+
+		$bindings = [];
+		if ($id !== null && $id !== '') {
+			$sql .= " AND COL_PRIMARY_KEY = ?";
+			$bindings[] = (int) $id;
+		} elseif ($callsign !== null && trim((string) $callsign) !== '') {
+			$sql .= " AND UPPER(COL_CALL) = ?";
+			$bindings[] = strtoupper(trim((string) $callsign));
+		}
+
+		// COL_QSO_DATE can be NULL for manually created QSOs - always order by TIME_ON
+		$sql .= " ORDER BY COL_TIME_ON DESC, COL_PRIMARY_KEY DESC LIMIT 1";
+
+		$query = $this->db->query($sql, $bindings);
+		if ($query === false || $query->num_rows() === 0) {
+			return null;
+		}
+		return $query->row();
+	}
+
 	function get_qso($id, $trusted = false) {
 		if ($trusted || ($this->check_qso_is_accessible($id))) {
 			$this->db->select($this->config->item('table_name') . '.*, station_profile.*, dxcc_entities.*, coalesce(dxcc_entities_2.name, "- NONE -") as station_country, dxcc_entities_2.end as station_end, eQSL_images.image_file as eqsl_image_file, lotw_users.callsign as lotwuser, lotw_users.lastupload, primary_subdivisions.subdivision, satellite.displayname AS sat_displayname, coalesce(contest.name, COL_CONTEST_ID) AS contestname');
