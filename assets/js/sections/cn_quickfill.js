@@ -110,44 +110,60 @@
 	}
 
 	/**
-	 * qso.js fires `band_to_freq/160m/AM` during page init (~250 ms in) and the
-	 * responses land afterwards, overwriting #frequency with the band default.
-	 * When we fill right after load (?from=<pk>) that leaves e.g. 1.838 MHz on
-	 * a 70cm QSO.
+	 * qso.js requests `band_to_freq/160m/AM` twice during page init and the
+	 * responses land late (measured: 1.9 s and 3.5 s after load on the PHP
+	 * built-in server, which serves requests serially). Each response writes
+	 * #frequency with the 160m default - so a fill done at load time can be
+	 * silently undone afterwards, leaving 1.838 MHz on a 70cm QSO.
 	 *
-	 * So: watch for a while and re-assert the frequency if it drifted. Stop
-	 * after 3 consecutive stable checks (or ~5 s) so we never fight the user.
-	 * Re-asserting with a change event is safe here: band is already set to the
-	 * matching value, so the band handler sees them as consistent and does not
-	 * fire another band_to_freq.
+	 * So keep watching for up to 8 s and re-assert whenever the value drifts.
+	 * Guarding is cancelled as soon as the user touches frequency/band, so we
+	 * never fight a human. Re-asserting with a change event is safe: the band
+	 * is written to the matching value first, so the band handler sees them as
+	 * consistent and will not fire another band_to_freq.
 	 */
 	function guardFrequency(fields) {
 		if (fields.freq_display === undefined) {
 			return;
 		}
 		var target = String(fields.freq_display);
-		var tries = 0;
-		var stable = 0;
-		var timer = setInterval(function () {
-			tries++;
-			var current = String($('#frequency').val() || '');
-			if (current === target) {
-				stable++;
-				if (stable >= 3) {
-					clearInterval(timer);
-				}
-				return;
-			}
-			stable = 0;
-			if (tries > 16) {
+		var deadline = Date.now() + 8000;
+		var applying = false;
+		var timer = null;
+
+		function stop() {
+			if (timer) {
 				clearInterval(timer);
-				return;
+				timer = null;
 			}
+			$('#frequency, #band').off('.cnqf');
+		}
+
+		function reassert() {
+			applying = true;
 			if (fields.band !== undefined) {
 				$('#band').val(fields.band);
 			}
 			$('#frequency').val(target).trigger('change');
-		}, 300);
+			applying = false;
+		}
+
+		// the user takes over -> stop correcting
+		$('#frequency, #band').on('keydown.cnqf input.cnqf', function () {
+			if (!applying) {
+				stop();
+			}
+		});
+
+		timer = setInterval(function () {
+			if (Date.now() > deadline) {
+				stop();
+				return;
+			}
+			if (String($('#frequency').val() || '') !== target) {
+				reassert();
+			}
+		}, 250);
 	}
 
 	function getJSON(url) {
