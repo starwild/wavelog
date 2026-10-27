@@ -88,6 +88,7 @@ if (typeof window.DX_WATERFALL_FIELD_MAP === 'undefined') {
     <div class="card">
 
     <form id="qso_input" method="post" action="<?php echo site_url('qso') . "?manual=" . $manual_mode; ?>" name="qsos" autocomplete="off" onReset="resetTimers(<?php echo $manual_mode; ?>);">
+      <?php $this->load->view('qso/components/env_bar'); ?>
 
       <div class="card-header">
         <ul style="font-size: 15px;" class="nav nav-tabs card-header-tabs pull-right"  id="myTab" role="tablist">
@@ -144,7 +145,7 @@ if (typeof window.DX_WATERFALL_FIELD_MAP === 'undefined') {
 				   	  if ($stations !== FALSE) {
                       foreach ($stations->result() as $stationrow) {
                 ?>
-                <option value="<?php echo $stationrow->station_id; ?>" <?php if($active_station_profile == $stationrow->station_id) { echo "selected=\"selected\""; $power = $stationrow->station_power; $station_callsign = $stationrow->station_callsign; } ?>><?php echo $stationrow->station_profile_name; ?></option>
+                <option data-call="<?php echo html_escape($stationrow->station_callsign); ?>" data-city="<?php echo html_escape($stationrow->station_city); ?>" data-grid="<?php echo html_escape($stationrow->station_gridsquare); ?>" data-power="<?php echo html_escape($stationrow->station_power); ?>" value="<?php echo $stationrow->station_id; ?>" <?php if($active_station_profile == $stationrow->station_id) { echo "selected=\"selected\""; $power = $stationrow->station_power; $station_callsign = $stationrow->station_callsign; } ?>><?php echo $stationrow->station_profile_name; ?></option>
                 <?php } } ?>
               </select>
             </div>
@@ -409,7 +410,7 @@ if (typeof window.DX_WATERFALL_FIELD_MAP === 'undefined') {
 				   if ($stations !== FALSE) {
                       foreach ($stations->result() as $stationrow) {
                 ?>
-                <option value="<?php echo $stationrow->station_id; ?>" <?php if($active_station_profile == $stationrow->station_id) { echo "selected=\"selected\""; $power = $stationrow->station_power; $station_callsign = $stationrow->station_callsign; } ?>><?php echo $stationrow->station_profile_name; ?></option>
+                <option data-call="<?php echo html_escape($stationrow->station_callsign); ?>" data-city="<?php echo html_escape($stationrow->station_city); ?>" data-grid="<?php echo html_escape($stationrow->station_gridsquare); ?>" data-power="<?php echo html_escape($stationrow->station_power); ?>" value="<?php echo $stationrow->station_id; ?>" <?php if($active_station_profile == $stationrow->station_id) { echo "selected=\"selected\""; $power = $stationrow->station_power; $station_callsign = $stationrow->station_callsign; } ?>><?php echo $stationrow->station_profile_name; ?></option>
                 <?php } ?>
               </select>
             </div>

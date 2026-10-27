@@ -49,6 +49,7 @@ class Qso_fill extends CI_Controller {
 	);
 
 	private $template_type = 'qso_template';
+	private $scene_type = 'cn_active_scene';   // single-row marker: which template is "current"
 	private $template_limit = 100;      // decision D5
 	private $template_name_max = 45;    // user_options.option_name is varchar(45)
 
@@ -197,6 +198,74 @@ class Qso_fill extends CI_Controller {
 
 		$this->user_options_model->del_option($this->template_type, $name);
 		$this->json_out(200, array('ok' => true));
+	}
+
+	/** GET /index.php/qso_fill/active_scene  -> {"ok":true,"name":".."} or {"ok":true,"name":""} */
+	public function active_scene() {
+		if (!$this->require_login()) {
+			return;
+		}
+		$rows = $this->user_options_model
+			->get_options($this->scene_type, array('option_key' => 'name'))
+			->result();
+		$name = empty($rows) ? '' : (string) $rows[0]->option_value;
+		$this->json_out(200, array('ok' => true, 'name' => $name));
+	}
+
+	/** POST /index.php/qso_fill/active_scene_save  {"name":".."}  (empty name clears) */
+	public function active_scene_save() {
+		if (!$this->require_login()) {
+			return;
+		}
+
+		$body = $this->json_body();
+		if ($body === null) {
+			$this->json_out(400, array('ok' => false, 'error' => 'bad_request'));
+			return;
+		}
+
+		$name = trim((string) ($body['name'] ?? ''));
+		if ($name !== '') {
+			// only allow scenes that actually exist - otherwise the marker
+			// would survive a template deletion and resurrect nothing
+			$exists = $this->user_options_model
+				->get_options($this->template_type, array('option_name' => $name))
+				->num_rows() > 0;
+			if (!$exists) {
+				$this->json_out(404, array('ok' => false, 'error' => 'template_not_found'));
+				return;
+			}
+		}
+
+		$this->user_options_model->del_option($this->scene_type, 'name');
+		if ($name !== '') {
+			$this->user_options_model->set_option($this->scene_type, 'name', array('name' => $name));
+		}
+		$this->json_out(200, array('ok' => true, 'name' => $name));
+	}
+
+	/** GET /index.php/qso_fill/past?callsign=BG1ABC  -> my last 3 QSOs with that call */
+	public function past() {
+		if (!$this->require_login()) {
+			return;
+		}
+		$callsign = strtoupper(trim((string) $this->input->get('callsign', TRUE)));
+		if ($callsign === '' || mb_strlen($callsign) > 32) {
+			$this->json_out(400, array('ok' => false, 'error' => 'bad_request'));
+			return;
+		}
+		$station_ids = $this->stations->all_station_ids_of_user();
+		$rows = $this->logbook_model->get_recent_for_callsign($station_ids, $callsign, 3);
+		$out = array();
+		foreach ($rows as $r) {
+			$out[] = array(
+				'time_on' => $r->COL_TIME_ON,
+				'band' => $r->COL_BAND,
+				'mode' => $r->COL_MODE,
+				'rst_sent' => $r->COL_RST_SENT,
+			);
+		}
+		$this->json_out(200, array('ok' => true, 'count' => count($out), 'items' => $out));
 	}
 
 	// ------------------------------------------------------------------ helpers

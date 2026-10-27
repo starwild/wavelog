@@ -2978,6 +2978,28 @@ class Logbook_model extends CI_Model {
 		return $query->row();
 	}
 
+	/*
+	 * China HAM Edition - quick log support.
+	 * My last $limit QSOs with one callsign (for the mobile lookup button).
+	 */
+	function get_recent_for_callsign($station_ids = '', $callsign = null, $limit = 3) {
+		$ids = array_filter(array_map('intval', explode(',', (string) $station_ids)), function ($v) {
+			return $v > 0;
+		});
+		if (empty($ids) || $callsign === null || trim((string) $callsign) === '') {
+			return array();
+		}
+		$table = $this->config->item('table_name');
+		$sql = "SELECT COL_PRIMARY_KEY, COL_TIME_ON, COL_BAND, COL_MODE, COL_RST_SENT
+				FROM " . $table . "
+				WHERE station_id IN (" . implode(',', $ids) . ")
+				  AND UPPER(COL_CALL) = ?
+				ORDER BY COL_TIME_ON DESC, COL_PRIMARY_KEY DESC
+				LIMIT " . (int) $limit;
+		$query = $this->db->query($sql, array(strtoupper(trim((string) $callsign))));
+		return ($query === false) ? array() : $query->result();
+	}
+
 	function get_qso($id, $trusted = false) {
 		if ($trusted || ($this->check_qso_is_accessible($id))) {
 			$this->db->select($this->config->item('table_name') . '.*, station_profile.*, dxcc_entities.*, coalesce(dxcc_entities_2.name, "- NONE -") as station_country, dxcc_entities_2.end as station_end, eQSL_images.image_file as eqsl_image_file, lotw_users.callsign as lotwuser, lotw_users.lastupload, primary_subdivisions.subdivision, satellite.displayname AS sat_displayname, coalesce(contest.name, COL_CONTEST_ID) AS contestname');

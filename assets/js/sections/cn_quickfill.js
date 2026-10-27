@@ -201,17 +201,24 @@
 		});
 	}
 
-	function applyTemplate(name) {
+	function applyTemplate(name, opts) {
+		opts = opts || {};
 		getJSON(API + 'templates').done(function (all) {
 			var fields = all && all[name];
 			if (!fields) {
-				notify('模板不存在或已被删除', false);
+				if (!opts.silent) {
+					notify('模板不存在或已被删除', false);
+				}
 				return;
 			}
 			apply(fields);
-			notify('已应用模板「' + name + '」（呼号未改动）');
+			if (!opts.silent) {
+				notify('已应用模板「' + name + '」（呼号未改动）');
+			}
 		}).fail(function () {
-			notify('模板读取失败', false);
+			if (!opts.silent) {
+				notify('模板读取失败', false);
+			}
 		});
 	}
 
@@ -377,14 +384,234 @@
 		}
 	}
 
-	function boot() {
-		if (!$('#cn_fill_last').length) {
+	// ------------------------------------------------------------------ env bar + scene (M0/M1)
+
+	function cnUtcHHMM() {
+		var d = new Date();
+		var p = function (n) { return String(n).padStart(2, '0'); };
+		return p(d.getUTCHours()) + ':' + p(d.getUTCMinutes());
+	}
+
+	// The bar renders from the LIVE form values (never a copied snapshot), so
+	// "what the bar says" is always "what will be saved".
+	function renderEnvBar() {
+		var $bar = $('#cn_env_bar');
+		if (!$bar.length) {
+			return;
+		}
+		var mode = $('#mode').val() || '-';
+		var freq = parseFloat($('#frequency').val());
+		var band = $('#band').val() || '-';
+		var $opt = $('#stationProfile option:selected');
+		var call = String($opt.data('call') || '');
+		var city = String($opt.data('city') || '');
+		var grid = String($opt.data('grid') || '');
+		var pwr = String($opt.data('power') || '');
+		var left = [cnUtcHHMM() + ' UTC', mode, (isFinite(freq) && freq > 0) ? (freq / 1000000).toFixed(3) + ' MHz' : '-', band].join(' · ');
+		var right = [call, city, grid, pwr ? pwr + 'W' : ''].filter(Boolean).join(' · ');
+		$bar.text(left + (right ? '　|　' + right : ''));
+	}
+
+	function bindEnvBar() {
+		if (!$('#cn_env_bar').length) {
+			return;
+		}
+		renderEnvBar();
+		['#mode', '#band', '#frequency', '#stationProfile'].forEach(function (sel) {
+			$(document).on('change.cnenv', sel, renderEnvBar);
+		});
+	}
+
+	function renderSceneSelect() {
+		var $sel = $('#cn_scene_select');
+		if (!$sel.length) {
+			return;
+		}
+		getJSON(API + 'templates').done(function (all) {
+			$sel.find('option:not(:first)').remove();
+			var names = Object.keys(all || {}).sort();
+			names.forEach(function (name) {
+				$sel.append($('<option></option>').attr('value', name).text(name));
+			});
+			getJSON(API + 'active_scene').done(function (r) {
+				var name = (r && r.name) || '';
+				if (name && !all[name]) {
+					name = '';   // marker survives a deleted template - ignore it
+				}
+				$sel.val(name);
+				if (name) {
+					apply(all[name], { silent: true });   // open page -> scene already on
+				}
+				renderEnvBar();
+			});
+		});
+	}
+
+	function saveActiveScene(name) {
+		$.ajax({
+			url: API + 'active_scene_save',
+			method: 'POST',
+			contentType: 'application/json; charset=utf-8',
+			dataType: 'json',
+			data: JSON.stringify({ name: name })
+		});
+	}
+
+	// ------------------------------------------------------------------ mobile page (M2)
+
+	function cnNowUtcParts() {
+		var d = new Date();
+		var p = function (n) { return String(n).padStart(2, '0'); };
+		// same dd/mm/yy shape the desktop form posts (user_date_format)
+		return {
+			date: p(d.getUTCDate()) + '/' + p(d.getUTCMonth() + 1) + '/' + String(d.getUTCFullYear()).slice(-2),
+			time: p(d.getUTCHours()) + ':' + p(d.getUTCMinutes())
+		};
+	}
+
+	function bootMobile() {
+		if (!$('#cn_mobile_save').length) {
 			return;
 		}
 
+		// RST quick buttons: fill-in shortcuts, not a radio group. A hand-typed
+		// value stays until the user picks another button or changes mode.
+		$(document).on('click', '.cn-rst-btn', function () {
+			var v = String($(this).data('rst'));
+			var target = String($(this).data('target'));
+			$('#' + target).val(v);
+			$('.cn-rst-btn[data-target="' + target + '"]').removeClass('active');
+			$(this).addClass('active');
+		});
+
+		// band -> default frequency (mirrors the desktop band handler)
+		$('#band').on('change', function () {
+			var cur = $('#frequency').val();
+			if (!cur || frequencyToBand(cur) !== $(this).val()) {
+				$.get(base_url + 'index.php/qso/band_to_freq/' + $(this).val() + '/' + $('#mode').val(), function (result) {
+					$('#frequency').val(result).trigger('change');
+				});
+			}
+		});
+
+		// frequency -> band
+		$('#frequency').on('change', function () {
+			var b = frequencyToBand($('#frequency').val());
+			if (b && $('#band option[value="' + b + '"]').length) {
+				$('#band').val(b);
+			}
+		});
+
+		// MHz display field <-> hidden Hz field
+		$('#frequency_mhz').on('input change', function () {
+			var v = parseFloat($(this).val());
+			$('#frequency').val(isFinite(v) && v > 0 ? String(Math.round(v * 1000000)) : '');
+		});
+		$('#frequency').on('change', function () {
+			var hz = parseFloat($(this).val());
+			$('#frequency_mhz').val(isFinite(hz) && hz > 0 ? (hz / 1000000).toFixed(3) : '');
+		});
+
+		// mode change -> RST default (same as desktop: switching mode resets)
+		$('#mode').on('change', function () {
+			setRst($(this).val());
+			$('.cn-rst-btn').removeClass('active');
+			$('.cn-rst-btn[data-target="rst_sent"][data-rst="' + $('#rst_sent').val() + '"]').addClass('active');
+			$('.cn-rst-btn[data-target="rst_rcvd"][data-rst="' + $('#rst_rcvd').val() + '"]').addClass('active');
+		});
+
+		// lookup: my recent QSOs with this callsign
+		$('#cn_call_lookup').on('click', function () {
+			var call = $('#callsign').val().trim();
+			var $box = $('#cn_past_box');
+			if (!call) {
+				notify('先填呼号再查', false);
+				return;
+			}
+			$.getJSON(API + 'past?callsign=' + encodeURIComponent(call)).done(function (r) {
+				if (!r.ok || !r.count) {
+					$box.removeClass('d-none').html('<span class="badge text-bg-info">首次通联</span>');
+					return;
+				}
+				var html = '<div class="small text-muted mb-1">通联过 ' + r.count + ' 次（最近）</div>';
+				r.items.forEach(function (it) {
+					html += '<div class="small">' + it.time_on + ' · ' + it.band + ' · ' + it.mode + ' · ' + it.rst_sent + '</div>';
+				});
+				$box.removeClass('d-none').html(html);
+			}).fail(function () {
+				notify('查询失败', false);
+			});
+		});
+
+		// save -> same endpoint as the desktop form
+		$('#cn_mobile_save').on('click', function (e) {
+			e.preventDefault();
+			var call = $('#callsign').val().trim();
+			if (!call) {
+				notify('请先填写对方呼号', false);
+				$('#callsign').addClass('is-invalid').trigger('focus');
+				return;
+			}
+			$('#callsign').removeClass('is-invalid');
+
+			var parts = cnNowUtcParts();
+			$('#cn_start_date').val(parts.date);
+			$('#cn_start_time').val(parts.time);
+
+			var payload = {};
+			$('#cn_mobile_form').serializeArray().forEach(function (x) { payload[x.name] = x.value; });
+
+			$.ajax({ url: $('#cn_mobile_form').attr('action'), method: 'POST', data: payload })
+				.done(function (res) {
+					var ok = true;
+					try { ok = JSON.parse(res).message === 'success'; } catch (err) { /* non-json means ok */ }
+					if (!ok) {
+						notify('保存失败：' + res, false);
+						return;
+					}
+					notify('已保存 ' + call + '（' + cnUtcHHMM() + ' UTC）');
+					// continuous logging: clear counterpart fields, keep scene/expand state
+					$('#callsign').val('');
+					$('#qth').val('');
+					setRst($('#mode').val());
+					$('.cn-rst-btn').removeClass('active');
+					$('.cn-rst-btn[data-target="rst_sent"][data-rst="' + $('#rst_sent').val() + '"]').addClass('active');
+					$('.cn-rst-btn[data-target="rst_rcvd"][data-rst="' + $('#rst_rcvd').val() + '"]').addClass('active');
+					renderEnvBar();
+					$('#callsign').trigger('focus');
+				})
+				.fail(function () {
+					notify('保存失败：网络或服务异常', false);
+				});
+		});
+
+		// page load: put a sensible default frequency on the bar (band+mode default)
+		$('#band').trigger('change');
+	}
+
+	function boot() {
 		$(document).on('click', '#cn_fill_last', function (e) {
 			e.preventDefault();
 			fromLast();
+		});
+
+		$(document).on('change', '#cn_scene_select', function () {
+			var name = $(this).val() || '';
+			if (!name) {
+				saveActiveScene('');
+				return;
+			}
+			getJSON(API + 'templates').done(function (all) {
+				var fields = all && all[name];
+				if (!fields) {
+					notify('场景不存在或已被删除', false);
+					return;
+				}
+				apply(fields, { silent: true });   // scene never touches callsign
+				saveActiveScene(name);
+				renderEnvBar();
+				notify('已切换场景「' + name + '」');
+			});
 		});
 
 		$(document).on('click', '#cn_tpl_menu .cn-tpl-item', function (e) {
@@ -425,6 +652,9 @@
 		});
 
 		renderMenu();
+		bindEnvBar();
+		renderSceneSelect();
+		bootMobile();
 
 		// qso?manual=1&from=<pk>  -> fill on load. Defer so qso.js's own
 		// document.ready (script loaded before this one) has finished binding.
