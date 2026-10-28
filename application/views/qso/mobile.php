@@ -53,7 +53,7 @@ $manual_mode = 1;
                 <select id="mode" class="form-select" name="mode">
                   <?php foreach ($modes as $mode) {
                       if ($mode->submode == null) {
-                          printf('<option value="%s">%s</option>', $mode->mode, $mode->mode);
+                          printf('<option value="%s"%s>%s</option>', $mode->mode, $mode->mode === 'FM' ? ' selected="selected"' : '', $mode->mode);
                       } else {
                           printf('<option value="%s">&rArr; %s</option>', $mode->submode, $mode->submode);
                       }
@@ -74,7 +74,7 @@ $manual_mode = 1;
                   <?php foreach ($bands as $key => $bandgroup) {
                       echo '<optgroup label="' . strtoupper($key) . '">';
                       foreach ($bandgroup as $band) {
-                          echo '<option value="' . $band . '">' . $band . '</option>';
+                          echo '<option value="' . $band . '"' . ($band === '70cm' ? ' selected="selected"' : '') . '>' . $band . '</option>';
                       }
                       echo '</optgroup>';
                   } ?>
@@ -82,8 +82,8 @@ $manual_mode = 1;
               </div>
               <div class="col-6">
                 <label class="form-label small mb-1" for="frequency_mhz"><?= __("Frequency"); ?> (MHz)</label>
-                <input type="number" step="0.001" min="0" class="form-control" id="frequency_mhz" inputmode="decimal" placeholder="439.050">
-                <input type="hidden" id="frequency" name="freq_display" value="">
+                <input type="number" step="0.001" min="0" class="form-control" id="frequency_mhz" inputmode="decimal" value="439.050" placeholder="439.050">
+                <input type="hidden" id="frequency" name="freq_display" value="439050000">
               </div>
               <div class="col-6">
                 <label class="form-label small mb-1" for="frequency_rx_mhz"><?= __('收信频率'); ?> (MHz)</label>
@@ -97,6 +97,10 @@ $manual_mode = 1;
                   <option data-call="<?php echo html_escape($stationrow->station_callsign); ?>" data-city="<?php echo html_escape($stationrow->station_city); ?>" data-grid="<?php echo html_escape($stationrow->station_gridsquare); ?>" data-power="<?php echo html_escape($stationrow->station_power); ?>" value="<?php echo $stationrow->station_id; ?>" <?php if ($active_station_profile == $stationrow->station_id) { echo 'selected="selected"'; } ?>><?php echo html_escape($stationrow->station_profile_name); ?></option>
                   <?php } ?>
                 </select>
+              </div>
+              <div class="col-6">
+                <label class="form-label small mb-1" for="cn_station_callsign"><?= __('我方台号'); ?></label>
+                <input type="text" class="form-control" id="cn_station_callsign" value="" readonly title="<?= __('跟随所选台站，在台站位置里维护') ?>" style="background-color:transparent;">
               </div>
             </div>
 

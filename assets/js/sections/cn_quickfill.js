@@ -614,9 +614,6 @@
 				});
 		});
 
-		// page load: put a sensible default frequency on the bar (band+mode default)
-		$('#band').trigger('change');
-
 		// time inputs: prefill "now" in Beijing time; live UTC hint on change
 		function refreshUtcHint() {
 			var utc = cnConvertToUtc($('#cn_qso_date').val(), $('#cn_qso_time').val(), $('#cn_tz').val());
@@ -657,15 +654,22 @@
 			$('#frequency_rx').val(mhz ? String(Math.round(hz)) : '');
 		});
 
-		// my-station info line inside "more fields"
+		// my-station info line inside "more fields" + the readonly my-callsign field
 		function renderMyInfo() {
 			var $opt = $('#stationProfile option:selected');
 			$('#cn_my_call').text($opt.data('call') || '-');
 			$('#cn_my_city').text($opt.data('city') || '-');
 			$('#cn_my_grid').text($opt.data('grid') || '-');
+			$('#cn_station_callsign').val($opt.data('call') || '');
 		}
 		renderMyInfo();
 		$(document).on('change.cnenv', '#stationProfile', renderMyInfo);
+
+		// page load defaults: put band/frequency on the env bar and mirror the
+		// prefilled UHF frequency (439.050) into the RX field. Runs after ALL
+		// handlers above are bound (RX mirror and mode chips included).
+		$('#band').trigger('change');
+		$('#frequency').trigger('change');
 	}
 
 	/**
