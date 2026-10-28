@@ -110,8 +110,8 @@ $manual_mode = 1;
                 </select>
               </div>
               <div class="col-6">
-                <label class="form-label small mb-1" for="cn_station_callsign"><?= __('我方台号'); ?></label>
-                <input type="text" class="form-control" id="cn_station_callsign" value="" readonly title="<?= __('跟随所选台站，在台站位置里维护') ?>" style="background-color:transparent;">
+                <label class="form-label small mb-1" for="cn_station_callsign"><?= __('我方呼号'); ?></label>
+                <input type="text" class="form-control" id="cn_station_callsign" name="station_callsign" value="" maxlength="32" title="<?= __('默认跟随台站，可按条覆盖；留空用台站默认') ?>">
               </div>
             </div>
 
@@ -149,17 +149,17 @@ $manual_mode = 1;
 
             <div class="row g-2 mb-2">
               <div class="col-6">
-                <label class="form-label small mb-1" for="qth"><?= __('对方 QTH'); ?> (<?= __('选填') ?>)</label>
-                <input type="text" class="form-control" id="qth" name="qth" maxlength="64">
-              </div>
-              <div class="col-6">
                 <label class="form-label small mb-1" for="my_city"><?= __('我方 QTH'); ?> (<?= __('选填') ?>)</label>
                 <input type="text" class="form-control" id="my_city" name="my_city" maxlength="64" placeholder="<?= __('默认用台站位置') ?>">
+              </div>
+              <div class="col-6">
+                <label class="form-label small mb-1" for="qth"><?= __('对方 QTH'); ?> (<?= __('选填') ?>)</label>
+                <input type="text" class="form-control" id="qth" name="qth" maxlength="64">
               </div>
             </div>
 
             <p class="mb-0">
-              <a class="small" data-bs-toggle="collapse" href="#cn_mobile_more" role="button" aria-expanded="false" aria-controls="cn_mobile_more" id="cn_mobile_more_toggle"><?= __('更多字段（双方设备 · 天气/海拔 · 中继 · 备注）') ?> ▾</a>
+              <a class="small" data-bs-toggle="collapse" href="#cn_mobile_more" role="button" aria-expanded="false" aria-controls="cn_mobile_more" id="cn_mobile_more_toggle"><?= __('更多字段（天气/海拔 · 备注）') ?> ▾</a>
             </p>
           </div>
         </div>
@@ -167,16 +167,12 @@ $manual_mode = 1;
         <div class="collapse mb-3" id="cn_mobile_more">
           <div class="card">
             <div class="card-body">
-              <?php $this->load->view('qso/components/cn_ham_fields'); ?>
+              <?php $this->load->view('qso/components/cn_ham_fields', array('cn_sections' => array('env'))); ?>
 
               <div class="row mt-2">
-                <div class="col-sm-6 mb-3">
-                  <label for="transmit_power" class="form-label"><?= __('我方功率 (W)') ?></label>
-                  <input type="number" step="0.001" inputmode="decimal" class="form-control" name="transmit_power" id="transmit_power">
-                </div>
-                <div class="col-sm-6 mb-3">
+                <div class="col-sm-12 mb-3">
                   <label for="comment" class="form-label"><?= __('备注（对方）') ?></label>
-                  <input type="text" class="form-control" name="comment" id="comment" maxlength="255">
+                  <input type="text" class="form-control form-control-sm" name="comment" id="comment" maxlength="255">
                 </div>
               </div>
 
@@ -203,15 +199,20 @@ $manual_mode = 1;
           <div id="cn_map" data-lat="<?php echo html_escape($lat); ?>" data-lng="<?php echo html_escape($lng); ?>" style="width:100%;height:200px;"></div>
         </div>
 
-        <div class="card previous-qsos">
-          <div class="card-header"><h4 class="card-title mb-0" id="timesWorked" style="font-size:16px;font-weight:bold;"><?= __("Previous Contacts"); ?></h4></div>
-          <div class="card-body">
+        <?php $this->load->view('qso/components/cn_ham_fields', array('cn_sections' => array('equipment', 'uv'), 'cn_open' => array('equipment' => true, 'uv' => true), 'cn_with_power' => true)); ?>
+
+        <div class="card previous-qsos mt-2">
+          <button type="button" class="card-header d-flex justify-content-between align-items-center w-100 text-start" data-bs-toggle="collapse" data-bs-target="#cn_past_body" aria-expanded="false" aria-controls="cn_past_body" style="cursor: pointer;">
+            <h4 class="card-title mb-0" id="timesWorked"><?= __("Previous Contacts"); ?></h4>
+            <span aria-hidden="true"><i class="fas fa-up-down"></i></span>
+          </button>
+          <div class="card-body collapse" id="cn_past_body">
             <div id="qso-last-table"
                  data-past-contacts-url="<?php echo site_url('/qso/component_past_contacts'); ?>"
                  data-auto-refresh="0"
                  aria-live="polite" aria-atomic="true">
             </div>
-            <small style="float:right;"><?= __('保存后自动刷新') ?></small>
+            <small style="float:right;"><?= __('保存后自动刷新并展开') ?></small>
           </div>
         </div>
 

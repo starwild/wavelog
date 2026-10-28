@@ -403,7 +403,8 @@
 		var freq = parseFloat($('#frequency').val());
 		var band = $('#band').val() || '-';
 		var $opt = $('#stationProfile option:selected');
-		var call = String($opt.data('call') || '');
+		// 我方呼号可按条覆盖：优先取可编辑字段，空则回落台站默认
+		var call = String($('#cn_station_callsign').val() || $opt.data('call') || '');
 		var city = String($opt.data('city') || '');
 		var grid = String($opt.data('grid') || '');
 		var pwr = String($opt.data('power') || '');
@@ -613,6 +614,8 @@
 					if (typeof cnLoadPastContacts === 'function') {
 						cnLoadPastContacts();
 					}
+					// Previous Contacts 默认折叠；保存成功后展开让用户看到新行
+					$('#cn_past_body').collapse('show');
 					$('#callsign').trigger('focus');
 				})
 				.fail(function () {

@@ -348,6 +348,7 @@ class QSO extends CI_Controller {
 			'cn_ctcss' => $this->input->post('cn_ctcss', TRUE) ?? NULL,
 			'cn_card_no' => $this->input->post('cn_card_no', TRUE) ?? NULL,
 			'my_city' => $this->input->post('my_city', TRUE) ?? NULL,
+			'station_callsign' => $this->input->post('station_callsign', TRUE) ?? NULL,
 		];
 
 		$result = $this->logbook_model->create_qso($qso_data, true, true);

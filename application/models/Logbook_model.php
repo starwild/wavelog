@@ -488,6 +488,11 @@ class Logbook_model extends CI_Model {
 			$data['COL_MY_POTA_REF'] = strtoupper(trim($station['station_pota'])) ?? NULL;
 
 			$data['COL_STATION_CALLSIGN'] = strtoupper(trim($station['station_callsign']));
+			// per-QSO my-callsign override (我方呼号可改): the quick page posts
+			// station_callsign; when given it wins over the station default
+			if (isset($qso_data['station_callsign']) && trim($qso_data['station_callsign']) !== '') {
+				$data['COL_STATION_CALLSIGN'] = strtoupper(trim($qso_data['station_callsign']));
+			}
 			$data['COL_MY_CITY'] = strtoupper(trim($station['station_city']));
 			// per-QSO my-QTH override (便携点位): the quick page posts my_city;
 			// when given it wins over the station default
@@ -2055,6 +2060,7 @@ class Logbook_model extends CI_Model {
 			'COL_MY_ALT' => 'my_alt',
 			'COL_MY_COMMENT' => 'my_comment',
 			'COL_MY_CITY' => 'my_city',
+			'COL_STATION_CALLSIGN' => 'station_callsign',
 		);
 		foreach ($cn_ham_fields as $cn_col => $cn_post_key) {
 			$cn_value = $this->input->post($cn_post_key);
