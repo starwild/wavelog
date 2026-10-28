@@ -76,14 +76,8 @@ $cn_has = function ($section) use ($cn_sections) {
   </button>
   <div class="<?= $cn_body('equipment'); ?>" id="cn-ham-equipment">
     <div class="row">
-      <div class="col-sm-6 border-end pe-sm-3">
+      <div class="col-sm-6">
         <h6 class="small text-muted border-bottom pb-1 mt-0"><i class="fas fa-house-signal me-1"></i><?= __('我方') ?></h6>
-        <?php if ($cn_with_power) { ?>
-        <div class="mb-3">
-          <label for="transmit_power" class="form-label"><?= $cn_labels['transmit_power']; ?></label>
-          <input type="number" step="0.001" inputmode="decimal" class="form-control form-control-sm" name="transmit_power" id="transmit_power" value="<?= $cn_val('COL_TX_PWR'); ?>">
-        </div>
-        <?php } ?>
         <div class="mb-3">
           <label for="my_rig" class="form-label"><?= $cn_labels['my_rig']; ?></label>
           <input type="text" class="form-control form-control-sm" name="my_rig" id="my_rig" maxlength="64" value="<?= $cn_val('COL_MY_RIG'); ?>" placeholder="<?= __('例如：FT-5DR') ?>">
@@ -92,6 +86,12 @@ $cn_has = function ($section) use ($cn_sections) {
           <label for="my_antenna" class="form-label"><?= $cn_labels['my_antenna']; ?></label>
           <input type="text" class="form-control form-control-sm" name="my_antenna" id="my_antenna" maxlength="64" value="<?= $cn_val('COL_MY_ANTENNA'); ?>" placeholder="<?= __('例如：X-50 玻璃钢') ?>">
         </div>
+        <?php if ($cn_with_power) { ?>
+        <div class="mb-3">
+          <label for="transmit_power" class="form-label"><?= $cn_labels['transmit_power']; ?></label>
+          <input type="number" step="0.001" inputmode="decimal" class="form-control form-control-sm" name="transmit_power" id="transmit_power" value="<?= $cn_val('COL_TX_PWR'); ?>">
+        </div>
+        <?php } ?>
       </div>
       <div class="col-sm-6">
         <h6 class="small text-muted border-bottom pb-1 mt-0"><i class="fas fa-tower-broadcast me-1"></i><?= __('对方') ?></h6>
@@ -109,7 +109,7 @@ $cn_has = function ($section) use ($cn_sections) {
         </div>
       </div>
     </div>
-    <small class="form-text text-muted"><?= $cn_with_power ? __('左列我方、右列对方。区县、中继等字段导出为 ADIF APP_WAVELOG_* 自定义字段。') : __('左列我方、右列对方。我方功率在上方「发射功率」里填。区县、中继等字段导出为 ADIF APP_WAVELOG_* 自定义字段。') ?></small>
+    <small class="form-text text-muted"><?= $cn_with_power ? __('左右两列同类对齐：电台对电台、天线对天线、功率对功率。区县、中继等字段导出为 ADIF APP_WAVELOG_* 自定义字段。') : __('左右两列同类对齐。我方功率在上方「发射功率」里填。区县、中继等字段导出为 ADIF APP_WAVELOG_* 自定义字段。') ?></small>
   </div>
 </div>
 <?php } ?>
@@ -152,7 +152,7 @@ $cn_has = function ($section) use ($cn_sections) {
   </button>
   <div class="<?= $cn_body('env'); ?>" id="cn-ham-env">
     <div class="row">
-      <div class="col-sm-6 border-end pe-sm-3">
+      <div class="col-sm-6">
         <h6 class="small text-muted border-bottom pb-1 mt-0"><i class="fas fa-house-signal me-1"></i><?= __('我方') ?></h6>
         <div class="mb-3">
           <label for="my_weather" class="form-label"><?= $cn_labels['my_weather']; ?></label>
@@ -193,16 +193,18 @@ $cn_has = function ($section) use ($cn_sections) {
   </button>
   <div class="card-body collapse" id="cn-ham-equipment-edit">
     <div class="row">
-      <div class="col-sm-6 border-end pe-sm-3">
+      <div class="col-sm-6 mb-2">
+        <label for="station_callsign_edit" class="form-label"><?= $cn_labels['station_callsign']; ?>（<?= __('本条覆盖，留空按台站') ?>）</label>
+        <input type="text" class="form-control" name="station_callsign" id="station_callsign_edit" maxlength="32" value="<?= $cn_val('COL_STATION_CALLSIGN'); ?>">
+      </div>
+      <div class="col-sm-6 mb-2">
+        <label for="my_city_edit" class="form-label"><?= __('我方 QTH'); ?>（<?= __('本条覆盖，留空按台站') ?>）</label>
+        <input type="text" class="form-control" name="my_city" id="my_city_edit" maxlength="64" value="<?= $cn_val('COL_MY_CITY'); ?>">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
         <h6 class="small text-muted border-bottom pb-1 mt-0"><i class="fas fa-house-signal me-1"></i><?= __('我方') ?></h6>
-        <div class="mb-3">
-          <label for="station_callsign_edit" class="form-label"><?= $cn_labels['station_callsign']; ?></label>
-          <input type="text" class="form-control" name="station_callsign" id="station_callsign_edit" maxlength="32" value="<?= $cn_val('COL_STATION_CALLSIGN'); ?>">
-        </div>
-        <div class="mb-3">
-          <label for="my_city_edit" class="form-label"><?= __('我方 QTH'); ?></label>
-          <input type="text" class="form-control" name="my_city" id="my_city_edit" maxlength="64" value="<?= $cn_val('COL_MY_CITY'); ?>">
-        </div>
         <div class="mb-3">
           <label for="my_rig_edit" class="form-label"><?= $cn_labels['my_rig']; ?></label>
           <input type="text" class="form-control" name="my_rig" id="my_rig_edit" maxlength="64" value="<?= $cn_val('COL_MY_RIG'); ?>">
@@ -228,7 +230,7 @@ $cn_has = function ($section) use ($cn_sections) {
         </div>
       </div>
     </div>
-    <small class="form-text text-muted"><?= __('左列我方、右列对方。我方呼号/我方 QTH 为本条覆盖值，留空按台站默认。') ?></small>
+    <small class="form-text text-muted"><?= __('左右两列同类对齐。我方功率在上方「发射功率」里填。') ?></small>
   </div>
 </div>
 
@@ -266,7 +268,7 @@ $cn_has = function ($section) use ($cn_sections) {
   </button>
   <div class="card-body collapse" id="cn-ham-env_edit">
     <div class="row">
-      <div class="col-sm-6 border-end pe-sm-3">
+      <div class="col-sm-6">
         <h6 class="small text-muted border-bottom pb-1 mt-0"><i class="fas fa-house-signal me-1"></i><?= __('我方') ?></h6>
         <div class="mb-3">
           <label for="my_weather_edit" class="form-label"><?= $cn_labels['my_weather']; ?></label>
