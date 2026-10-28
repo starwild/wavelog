@@ -76,34 +76,40 @@ $cn_has = function ($section) use ($cn_sections) {
   </button>
   <div class="<?= $cn_body('equipment'); ?>" id="cn-ham-equipment">
     <div class="row">
-      <?php if ($cn_with_power) { ?>
-      <div class="col-sm-6 mb-3">
-        <label for="transmit_power" class="form-label"><?= $cn_labels['transmit_power']; ?></label>
-        <input type="number" step="0.001" inputmode="decimal" class="form-control form-control-sm" name="transmit_power" id="transmit_power" value="<?= $cn_val('COL_TX_PWR'); ?>">
+      <div class="col-sm-6 border-end pe-sm-3">
+        <h6 class="small text-muted border-bottom pb-1 mt-0"><i class="fas fa-house-signal me-1"></i><?= __('我方') ?></h6>
+        <?php if ($cn_with_power) { ?>
+        <div class="mb-3">
+          <label for="transmit_power" class="form-label"><?= $cn_labels['transmit_power']; ?></label>
+          <input type="number" step="0.001" inputmode="decimal" class="form-control form-control-sm" name="transmit_power" id="transmit_power" value="<?= $cn_val('COL_TX_PWR'); ?>">
+        </div>
+        <?php } ?>
+        <div class="mb-3">
+          <label for="my_rig" class="form-label"><?= $cn_labels['my_rig']; ?></label>
+          <input type="text" class="form-control form-control-sm" name="my_rig" id="my_rig" maxlength="64" value="<?= $cn_val('COL_MY_RIG'); ?>" placeholder="<?= __('例如：FT-5DR') ?>">
+        </div>
+        <div class="mb-3">
+          <label for="my_antenna" class="form-label"><?= $cn_labels['my_antenna']; ?></label>
+          <input type="text" class="form-control form-control-sm" name="my_antenna" id="my_antenna" maxlength="64" value="<?= $cn_val('COL_MY_ANTENNA'); ?>" placeholder="<?= __('例如：X-50 玻璃钢') ?>">
+        </div>
       </div>
-      <?php } ?>
-      <div class="col-sm-6 mb-3">
-        <label for="my_rig" class="form-label"><?= $cn_labels['my_rig']; ?></label>
-        <input type="text" class="form-control form-control-sm" name="my_rig" id="my_rig" maxlength="64" value="<?= $cn_val('COL_MY_RIG'); ?>" placeholder="<?= __('例如：FT-5DR') ?>">
-      </div>
-      <div class="col-sm-6 mb-3">
-        <label for="my_antenna" class="form-label"><?= $cn_labels['my_antenna']; ?></label>
-        <input type="text" class="form-control form-control-sm" name="my_antenna" id="my_antenna" maxlength="64" value="<?= $cn_val('COL_MY_ANTENNA'); ?>" placeholder="<?= __('例如：X-50 玻璃钢') ?>">
-      </div>
-      <div class="col-sm-6 mb-3">
-        <label for="rig" class="form-label"><?= $cn_labels['rig']; ?></label>
-        <input type="text" class="form-control form-control-sm" name="rig" id="rig" maxlength="64" value="<?= $cn_val('COL_RIG'); ?>" placeholder="<?= __('例如：UV-5R') ?>">
-      </div>
-      <div class="col-sm-6 mb-3">
-        <label for="rig_ant" class="form-label"><?= $cn_labels['rig_ant']; ?></label>
-        <input type="text" class="form-control form-control-sm" name="rig_ant" id="rig_ant" maxlength="64" value="<?= $cn_val('COL_RIG_ANT'); ?>" placeholder="<?= __('例如：GP-9 / 车载苗子') ?>">
-      </div>
-      <div class="col-sm-6 mb-3">
-        <label for="rx_pwr" class="form-label"><?= $cn_labels['rx_pwr']; ?></label>
-        <input type="number" step="0.001" inputmode="decimal" class="form-control form-control-sm" name="rx_pwr" id="rx_pwr" value="<?= $cn_val('COL_RX_PWR'); ?>">
+      <div class="col-sm-6">
+        <h6 class="small text-muted border-bottom pb-1 mt-0"><i class="fas fa-tower-broadcast me-1"></i><?= __('对方') ?></h6>
+        <div class="mb-3">
+          <label for="rig" class="form-label"><?= $cn_labels['rig']; ?></label>
+          <input type="text" class="form-control form-control-sm" name="rig" id="rig" maxlength="64" value="<?= $cn_val('COL_RIG'); ?>" placeholder="<?= __('例如：UV-5R') ?>">
+        </div>
+        <div class="mb-3">
+          <label for="rig_ant" class="form-label"><?= $cn_labels['rig_ant']; ?></label>
+          <input type="text" class="form-control form-control-sm" name="rig_ant" id="rig_ant" maxlength="64" value="<?= $cn_val('COL_RIG_ANT'); ?>" placeholder="<?= __('例如：GP-9 / 车载苗子') ?>">
+        </div>
+        <div class="mb-3">
+          <label for="rx_pwr" class="form-label"><?= $cn_labels['rx_pwr']; ?></label>
+          <input type="number" step="0.001" inputmode="decimal" class="form-control form-control-sm" name="rx_pwr" id="rx_pwr" value="<?= $cn_val('COL_RX_PWR'); ?>">
+        </div>
       </div>
     </div>
-    <small class="form-text text-muted"><?= $cn_with_power ? __('我方在前、对方在后。对方天线、区县、中继等字段导出为 ADIF APP_WAVELOG_* 自定义字段。') : __('我方功率在上方「发射功率」里填。对方天线、区县、中继等字段导出为 ADIF APP_WAVELOG_* 自定义字段。') ?></small>
+    <small class="form-text text-muted"><?= $cn_with_power ? __('左列我方、右列对方。区县、中继等字段导出为 ADIF APP_WAVELOG_* 自定义字段。') : __('左列我方、右列对方。我方功率在上方「发射功率」里填。区县、中继等字段导出为 ADIF APP_WAVELOG_* 自定义字段。') ?></small>
   </div>
 </div>
 <?php } ?>
@@ -146,28 +152,34 @@ $cn_has = function ($section) use ($cn_sections) {
   </button>
   <div class="<?= $cn_body('env'); ?>" id="cn-ham-env">
     <div class="row">
-      <div class="col-sm-6 mb-3">
-        <label for="my_weather" class="form-label"><?= $cn_labels['my_weather']; ?></label>
-        <input type="text" class="form-control form-control-sm" name="my_weather" id="my_weather" maxlength="64" value="<?= $cn_val('COL_MY_WEATHER'); ?>" placeholder="例如：多云 · 3 级风">
+      <div class="col-sm-6 border-end pe-sm-3">
+        <h6 class="small text-muted border-bottom pb-1 mt-0"><i class="fas fa-house-signal me-1"></i><?= __('我方') ?></h6>
+        <div class="mb-3">
+          <label for="my_weather" class="form-label"><?= $cn_labels['my_weather']; ?></label>
+          <input type="text" class="form-control form-control-sm" name="my_weather" id="my_weather" maxlength="64" value="<?= $cn_val('COL_MY_WEATHER'); ?>" placeholder="例如：多云 · 3 级风">
+        </div>
+        <div class="mb-3">
+          <label for="my_alt" class="form-label"><?= $cn_labels['my_alt']; ?></label>
+          <input type="text" class="form-control form-control-sm" name="my_alt" id="my_alt" maxlength="16" value="<?= $cn_val('COL_MY_ALT'); ?>" placeholder="例如：1200（山顶）">
+        </div>
+        <div class="mb-3">
+          <label for="my_comment" class="form-label"><?= $cn_labels['my_comment']; ?></label>
+          <input type="text" class="form-control form-control-sm" name="my_comment" id="my_comment" maxlength="255" value="<?= $cn_val('COL_MY_COMMENT'); ?>" placeholder="写给自己看的：设备状态、信号变化等">
+        </div>
       </div>
-      <div class="col-sm-6 mb-3">
-        <label for="my_alt" class="form-label"><?= $cn_labels['my_alt']; ?></label>
-        <input type="text" class="form-control form-control-sm" name="my_alt" id="my_alt" maxlength="16" value="<?= $cn_val('COL_MY_ALT'); ?>" placeholder="例如：1200（山顶）">
-      </div>
-      <div class="col-sm-12 mb-3">
-        <label for="my_comment" class="form-label"><?= $cn_labels['my_comment']; ?></label>
-        <input type="text" class="form-control form-control-sm" name="my_comment" id="my_comment" maxlength="255" value="<?= $cn_val('COL_MY_COMMENT'); ?>" placeholder="写给自己看的：设备状态、信号变化等">
-      </div>
-      <div class="col-sm-6 mb-3">
-        <label for="weather" class="form-label"><?= $cn_labels['weather']; ?></label>
-        <input type="text" class="form-control form-control-sm" name="weather" id="weather" maxlength="64" value="<?= $cn_val('COL_WEATHER'); ?>" placeholder="例如：晴 · 微风">
-      </div>
-      <div class="col-sm-6 mb-3">
-        <label for="alt" class="form-label"><?= $cn_labels['alt']; ?></label>
-        <input type="text" class="form-control form-control-sm" name="alt" id="alt" maxlength="16" value="<?= $cn_val('COL_ALT'); ?>" placeholder="例如：850">
+      <div class="col-sm-6">
+        <h6 class="small text-muted border-bottom pb-1 mt-0"><i class="fas fa-tower-broadcast me-1"></i><?= __('对方') ?></h6>
+        <div class="mb-3">
+          <label for="weather" class="form-label"><?= $cn_labels['weather']; ?></label>
+          <input type="text" class="form-control form-control-sm" name="weather" id="weather" maxlength="64" value="<?= $cn_val('COL_WEATHER'); ?>" placeholder="例如：晴 · 微风">
+        </div>
+        <div class="mb-3">
+          <label for="alt" class="form-label"><?= $cn_labels['alt']; ?></label>
+          <input type="text" class="form-control form-control-sm" name="alt" id="alt" maxlength="16" value="<?= $cn_val('COL_ALT'); ?>" placeholder="例如：850">
+        </div>
       </div>
     </div>
-    <small class="form-text text-muted"><?= __('天气/海拔按场次记录，我方在前。对方备注写「备注（对方）」里。') ?></small>
+    <small class="form-text text-muted"><?= __('左列我方、右列对方，按场次记录。对方备注写在「备注（对方）」里。') ?></small>
   </div>
 </div>
 <?php } ?>
@@ -181,36 +193,42 @@ $cn_has = function ($section) use ($cn_sections) {
   </button>
   <div class="card-body collapse" id="cn-ham-equipment-edit">
     <div class="row">
-      <div class="col-sm-6 mb-3">
-        <label for="station_callsign_edit" class="form-label"><?= $cn_labels['station_callsign']; ?></label>
-        <input type="text" class="form-control" name="station_callsign" id="station_callsign_edit" maxlength="32" value="<?= $cn_val('COL_STATION_CALLSIGN'); ?>">
+      <div class="col-sm-6 border-end pe-sm-3">
+        <h6 class="small text-muted border-bottom pb-1 mt-0"><i class="fas fa-house-signal me-1"></i><?= __('我方') ?></h6>
+        <div class="mb-3">
+          <label for="station_callsign_edit" class="form-label"><?= $cn_labels['station_callsign']; ?></label>
+          <input type="text" class="form-control" name="station_callsign" id="station_callsign_edit" maxlength="32" value="<?= $cn_val('COL_STATION_CALLSIGN'); ?>">
+        </div>
+        <div class="mb-3">
+          <label for="my_city_edit" class="form-label"><?= __('我方 QTH'); ?></label>
+          <input type="text" class="form-control" name="my_city" id="my_city_edit" maxlength="64" value="<?= $cn_val('COL_MY_CITY'); ?>">
+        </div>
+        <div class="mb-3">
+          <label for="my_rig_edit" class="form-label"><?= $cn_labels['my_rig']; ?></label>
+          <input type="text" class="form-control" name="my_rig" id="my_rig_edit" maxlength="64" value="<?= $cn_val('COL_MY_RIG'); ?>">
+        </div>
+        <div class="mb-3">
+          <label for="my_antenna_edit" class="form-label"><?= $cn_labels['my_antenna']; ?></label>
+          <input type="text" class="form-control" name="my_antenna" id="my_antenna_edit" maxlength="64" value="<?= $cn_val('COL_MY_ANTENNA'); ?>">
+        </div>
       </div>
-      <div class="col-sm-6 mb-3">
-        <label for="my_city_edit" class="form-label"><?= __('我方 QTH'); ?></label>
-        <input type="text" class="form-control" name="my_city" id="my_city_edit" maxlength="64" value="<?= $cn_val('COL_MY_CITY'); ?>">
-      </div>
-      <div class="col-sm-6 mb-3">
-        <label for="my_rig_edit" class="form-label"><?= $cn_labels['my_rig']; ?></label>
-        <input type="text" class="form-control" name="my_rig" id="my_rig_edit" maxlength="64" value="<?= $cn_val('COL_MY_RIG'); ?>">
-      </div>
-      <div class="col-sm-6 mb-3">
-        <label for="my_antenna_edit" class="form-label"><?= $cn_labels['my_antenna']; ?></label>
-        <input type="text" class="form-control" name="my_antenna" id="my_antenna_edit" maxlength="64" value="<?= $cn_val('COL_MY_ANTENNA'); ?>">
-      </div>
-      <div class="col-sm-6 mb-3">
-        <label for="rig_edit" class="form-label"><?= $cn_labels['rig']; ?></label>
-        <input type="text" class="form-control" name="rig" id="rig_edit" maxlength="64" value="<?= $cn_val('COL_RIG'); ?>">
-      </div>
-      <div class="col-sm-6 mb-3">
-        <label for="rig_ant_edit" class="form-label"><?= $cn_labels['rig_ant']; ?></label>
-        <input type="text" class="form-control" name="rig_ant" id="rig_ant_edit" maxlength="64" value="<?= $cn_val('COL_RIG_ANT'); ?>">
-      </div>
-      <div class="col-sm-6 mb-3">
-        <label for="rx_pwr_edit" class="form-label"><?= $cn_labels['rx_pwr']; ?></label>
-        <input type="number" step="0.001" inputmode="decimal" class="form-control" name="rx_pwr" id="rx_pwr_edit" value="<?= $cn_val('COL_RX_PWR'); ?>">
+      <div class="col-sm-6">
+        <h6 class="small text-muted border-bottom pb-1 mt-0"><i class="fas fa-tower-broadcast me-1"></i><?= __('对方') ?></h6>
+        <div class="mb-3">
+          <label for="rig_edit" class="form-label"><?= $cn_labels['rig']; ?></label>
+          <input type="text" class="form-control" name="rig" id="rig_edit" maxlength="64" value="<?= $cn_val('COL_RIG'); ?>">
+        </div>
+        <div class="mb-3">
+          <label for="rig_ant_edit" class="form-label"><?= $cn_labels['rig_ant']; ?></label>
+          <input type="text" class="form-control" name="rig_ant" id="rig_ant_edit" maxlength="64" value="<?= $cn_val('COL_RIG_ANT'); ?>">
+        </div>
+        <div class="mb-3">
+          <label for="rx_pwr_edit" class="form-label"><?= $cn_labels['rx_pwr']; ?></label>
+          <input type="number" step="0.001" inputmode="decimal" class="form-control" name="rx_pwr" id="rx_pwr_edit" value="<?= $cn_val('COL_RX_PWR'); ?>">
+        </div>
       </div>
     </div>
-    <small class="form-text text-muted"><?= __('我方呼号/我方 QTH 为本条覆盖值；留空按台站默认。') ?></small>
+    <small class="form-text text-muted"><?= __('左列我方、右列对方。我方呼号/我方 QTH 为本条覆盖值，留空按台站默认。') ?></small>
   </div>
 </div>
 
@@ -248,28 +266,34 @@ $cn_has = function ($section) use ($cn_sections) {
   </button>
   <div class="card-body collapse" id="cn-ham-env_edit">
     <div class="row">
-      <div class="col-sm-6 mb-3">
-        <label for="my_weather_edit" class="form-label"><?= $cn_labels['my_weather']; ?></label>
-        <input type="text" class="form-control" name="my_weather" id="my_weather_edit" maxlength="64" value="<?= $cn_val('COL_MY_WEATHER'); ?>" placeholder="例如：多云 · 3 级风">
+      <div class="col-sm-6 border-end pe-sm-3">
+        <h6 class="small text-muted border-bottom pb-1 mt-0"><i class="fas fa-house-signal me-1"></i><?= __('我方') ?></h6>
+        <div class="mb-3">
+          <label for="my_weather_edit" class="form-label"><?= $cn_labels['my_weather']; ?></label>
+          <input type="text" class="form-control" name="my_weather" id="my_weather_edit" maxlength="64" value="<?= $cn_val('COL_MY_WEATHER'); ?>" placeholder="例如：多云 · 3 级风">
+        </div>
+        <div class="mb-3">
+          <label for="my_alt_edit" class="form-label"><?= $cn_labels['my_alt']; ?></label>
+          <input type="text" class="form-control" name="my_alt" id="my_alt_edit" maxlength="16" value="<?= $cn_val('COL_MY_ALT'); ?>" placeholder="例如：1200（山顶）">
+        </div>
+        <div class="mb-3">
+          <label for="my_comment_edit" class="form-label"><?= $cn_labels['my_comment']; ?></label>
+          <input type="text" class="form-control" name="my_comment" id="my_comment_edit" maxlength="255" value="<?= $cn_val('COL_MY_COMMENT'); ?>" placeholder="写给自己看的：设备状态、信号变化等">
+        </div>
       </div>
-      <div class="col-sm-6 mb-3">
-        <label for="my_alt_edit" class="form-label"><?= $cn_labels['my_alt']; ?></label>
-        <input type="text" class="form-control" name="my_alt" id="my_alt_edit" maxlength="16" value="<?= $cn_val('COL_MY_ALT'); ?>" placeholder="例如：1200（山顶）">
-      </div>
-      <div class="col-sm-12 mb-3">
-        <label for="my_comment_edit" class="form-label"><?= $cn_labels['my_comment']; ?></label>
-        <input type="text" class="form-control" name="my_comment" id="my_comment_edit" maxlength="255" value="<?= $cn_val('COL_MY_COMMENT'); ?>" placeholder="写给自己看的：设备状态、信号变化等">
-      </div>
-      <div class="col-sm-6 mb-3">
-        <label for="weather_edit" class="form-label"><?= $cn_labels['weather']; ?></label>
-        <input type="text" class="form-control" name="weather" id="weather_edit" maxlength="64" value="<?= $cn_val('COL_WEATHER'); ?>" placeholder="例如：晴 · 微风">
-      </div>
-      <div class="col-sm-6 mb-3">
-        <label for="alt_edit" class="form-label"><?= $cn_labels['alt']; ?></label>
-        <input type="text" class="form-control" name="alt" id="alt_edit" maxlength="16" value="<?= $cn_val('COL_ALT'); ?>" placeholder="例如：850">
+      <div class="col-sm-6">
+        <h6 class="small text-muted border-bottom pb-1 mt-0"><i class="fas fa-tower-broadcast me-1"></i><?= __('对方') ?></h6>
+        <div class="mb-3">
+          <label for="weather_edit" class="form-label"><?= $cn_labels['weather']; ?></label>
+          <input type="text" class="form-control" name="weather" id="weather_edit" maxlength="64" value="<?= $cn_val('COL_WEATHER'); ?>" placeholder="例如：晴 · 微风">
+        </div>
+        <div class="mb-3">
+          <label for="alt_edit" class="form-label"><?= $cn_labels['alt']; ?></label>
+          <input type="text" class="form-control" name="alt" id="alt_edit" maxlength="16" value="<?= $cn_val('COL_ALT'); ?>" placeholder="例如：850">
+        </div>
       </div>
     </div>
-    <small class="form-text text-muted"><?= __('天气/海拔按场次记录，我方在前。对方备注写上方的「备注」里。') ?></small>
+    <small class="form-text text-muted"><?= __('左列我方、右列对方，按场次记录。对方备注写上方的「备注」里。') ?></small>
   </div>
 </div>
 <?php } ?>
