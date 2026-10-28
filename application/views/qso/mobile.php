@@ -81,13 +81,24 @@ $manual_mode = 1;
                 </select>
               </div>
               <div class="col-6">
-                <label class="form-label small mb-1" for="frequency_mhz"><?= __("Frequency"); ?> (MHz)</label>
+                <label class="form-label small mb-1" for="cn_shift"><?= __('差频') ?></label>
+                <select id="cn_shift" class="form-select">
+                  <option value="0"><?= __('单工（同频）') ?></option>
+                  <option value="-5" selected><?= __('下差 5 MHz') ?></option>
+                  <option value="-10"><?= __('下差 10 MHz') ?></option>
+                  <option value="-1.6"><?= __('下差 1.6 MHz') ?></option>
+                  <option value="5"><?= __('上差 5 MHz') ?></option>
+                  <option value="custom"><?= __('自定义') ?></option>
+                </select>
+              </div>
+              <div class="col-6">
+                <label class="form-label small mb-1" for="frequency_mhz"><?= __('发送频率'); ?> (MHz)</label>
                 <input type="number" step="0.001" min="0" class="form-control" id="frequency_mhz" inputmode="decimal" value="439.050" placeholder="439.050">
                 <input type="hidden" id="frequency" name="freq_display" value="439050000">
               </div>
               <div class="col-6">
-                <label class="form-label small mb-1" for="frequency_rx_mhz"><?= __('收信频率'); ?> (MHz)</label>
-                <input type="number" step="0.001" min="0" class="form-control" id="frequency_rx_mhz" inputmode="decimal" placeholder="<?= __('同发射') ?>">
+                <label class="form-label small mb-1" for="frequency_rx_mhz"><?= __('接收频率'); ?> (MHz)</label>
+                <input type="number" step="0.001" min="0" class="form-control" id="frequency_rx_mhz" inputmode="decimal" placeholder="<?= __('随差频联动') ?>">
                 <input type="hidden" id="frequency_rx" name="freq_display_rx" value="">
               </div>
               <div class="col-6">
@@ -136,9 +147,15 @@ $manual_mode = 1;
               </div>
             </div>
 
-            <div class="mb-2">
-              <label class="form-label small mb-1" for="qth"><?= __("QTH"); ?> (<?= __('选填') ?>)</label>
-              <input type="text" class="form-control" id="qth" name="qth" maxlength="64">
+            <div class="row g-2 mb-2">
+              <div class="col-6">
+                <label class="form-label small mb-1" for="qth"><?= __('对方 QTH'); ?> (<?= __('选填') ?>)</label>
+                <input type="text" class="form-control" id="qth" name="qth" maxlength="64">
+              </div>
+              <div class="col-6">
+                <label class="form-label small mb-1" for="my_city"><?= __('我方 QTH'); ?> (<?= __('选填') ?>)</label>
+                <input type="text" class="form-control" id="my_city" name="my_city" maxlength="64" placeholder="<?= __('默认用台站位置') ?>">
+              </div>
             </div>
 
             <p class="mb-0">

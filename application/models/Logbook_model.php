@@ -489,6 +489,11 @@ class Logbook_model extends CI_Model {
 
 			$data['COL_STATION_CALLSIGN'] = strtoupper(trim($station['station_callsign']));
 			$data['COL_MY_CITY'] = strtoupper(trim($station['station_city']));
+			// per-QSO my-QTH override (便携点位): the quick page posts my_city;
+			// when given it wins over the station default
+			if (isset($qso_data['my_city']) && trim($qso_data['my_city']) !== '') {
+				$data['COL_MY_CITY'] = strtoupper(trim($qso_data['my_city']));
+			}
 			$data['COL_MY_DXCC'] = strtoupper(trim($station['station_dxcc']));
 			$data['COL_MY_COUNTRY'] = strtoupper(trim($station['station_country'] ?? NULL));
 			$data['COL_MY_CNTY'] = strtoupper(trim($station['station_cnty']));
@@ -2049,6 +2054,7 @@ class Logbook_model extends CI_Model {
 			'COL_MY_WEATHER' => 'my_weather',
 			'COL_MY_ALT' => 'my_alt',
 			'COL_MY_COMMENT' => 'my_comment',
+			'COL_MY_CITY' => 'my_city',
 		);
 		foreach ($cn_ham_fields as $cn_col => $cn_post_key) {
 			$cn_value = $this->input->post($cn_post_key);

@@ -44,6 +44,7 @@ class Qso_fill extends CI_Controller {
 		'cn_ctcss'        => array('COL_CTCSS', false),
 		// my own gear
 		'transmit_power'  => array('COL_TX_PWR', false),
+		'my_city'         => array('COL_MY_CITY', false),
 		'my_rig'          => array('COL_MY_RIG', false),
 		'my_antenna'      => array('COL_MY_ANTENNA', false),
 	);

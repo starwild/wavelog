@@ -141,6 +141,10 @@ $cn_labels = array(
   <div class="card-body collapse" id="cn-ham-equipment-edit">
     <div class="row">
       <div class="col-sm-6 mb-3">
+        <label for="my_city_edit" class="form-label"><?= __('我方 QTH'); ?></label>
+        <input type="text" class="form-control" name="my_city" id="my_city_edit" maxlength="64" value="<?= $cn_val('COL_MY_CITY'); ?>">
+      </div>
+      <div class="col-sm-6 mb-3">
         <label for="my_rig_edit" class="form-label"><?= $cn_labels['my_rig']; ?></label>
         <input type="text" class="form-control" name="my_rig" id="my_rig_edit" maxlength="64" value="<?= $cn_val('COL_MY_RIG'); ?>">
       </div>

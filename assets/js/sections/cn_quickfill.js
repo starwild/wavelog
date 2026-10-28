@@ -527,7 +527,13 @@
 		// MHz display field <-> hidden Hz field
 		$('#frequency_mhz').on('input change', function () {
 			var v = parseFloat($(this).val());
-			$('#frequency').val(isFinite(v) && v > 0 ? String(Math.round(v * 1000000)) : '');
+			var hz = isFinite(v) && v > 0 ? String(Math.round(v * 1000000)) : '';
+			$('#frequency').val(hz);
+			// live shift linkage + env bar while typing (plain .val() fires no events)
+			cnApplyRx(parseFloat(hz));
+			if (typeof renderEnvBar === 'function') {
+				renderEnvBar();
+			}
 		});
 		$('#frequency').on('change', function () {
 			var hz = parseFloat($(this).val());
@@ -637,10 +643,33 @@
 			$('#mode').val(m).trigger('change');
 		});
 
-		// RX frequency: mirrors TX until the user types one (simplex default)
+		// RX frequency: linked to TX via the shift select (差频). Default is
+		// -5 MHz (下差, the common CN UHF repeater split). Hand-typing an RX
+		// value flips the select to 自定义 and stops the linkage until a
+		// shift option is picked again.
 		var cnRxTouched = false;
+		function cnApplyRx(hz) {
+			var shift = parseFloat($('#cn_shift').val());
+			if (!isFinite(shift)) {
+				return; // 自定义: leave RX alone
+			}
+			if (!(isFinite(hz) && hz > 0)) {
+				$('#frequency_rx_mhz').val('');
+				$('#frequency_rx').val('');
+				return;
+			}
+			var rx = Math.round(hz + shift * 1000000);
+			if (rx <= 0) {
+				$('#frequency_rx_mhz').val('');
+				$('#frequency_rx').val('');
+				return;
+			}
+			$('#frequency_rx_mhz').val((rx / 1000000).toFixed(3));
+			$('#frequency_rx').val(String(rx));
+		}
 		$('#frequency_rx_mhz').on('input', function () {
 			cnRxTouched = true;
+			$('#cn_shift').val('custom');
 			var v = parseFloat($(this).val());
 			$('#frequency_rx').val(isFinite(v) && v > 0 ? String(Math.round(v * 1000000)) : '');
 		});
@@ -648,10 +677,15 @@
 			if (cnRxTouched) {
 				return;
 			}
-			var hz = parseFloat($(this).val());
-			var mhz = isFinite(hz) && hz > 0 ? (hz / 1000000).toFixed(3) : '';
-			$('#frequency_rx_mhz').val(mhz);
-			$('#frequency_rx').val(mhz ? String(Math.round(hz)) : '');
+			cnApplyRx(parseFloat($(this).val()));
+		});
+		$('#cn_shift').on('change', function () {
+			if ($(this).val() === 'custom') {
+				cnRxTouched = true;
+				return;
+			}
+			cnRxTouched = false;
+			cnApplyRx(parseFloat($('#frequency').val()));
 		});
 
 		// my-station info line inside "more fields" + the readonly my-callsign field
@@ -661,6 +695,7 @@
 			$('#cn_my_city').text($opt.data('city') || '-');
 			$('#cn_my_grid').text($opt.data('grid') || '-');
 			$('#cn_station_callsign').val($opt.data('call') || '');
+			$('#my_city').val($opt.data('city') || '');
 		}
 		renderMyInfo();
 		$(document).on('change.cnenv', '#stationProfile', renderMyInfo);
