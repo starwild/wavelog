@@ -393,8 +393,6 @@ if (typeof window.DX_WATERFALL_FIELD_MAP === 'undefined') {
                 </div>
               </div>
 
-              <?php $this->load->view('qso/components/cn_ham_fields', array('qso' => null, 'edit_mode' => false)); ?>
-
           </div>
 
           <!-- Station Panel Data -->
