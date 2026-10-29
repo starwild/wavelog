@@ -6,6 +6,9 @@ ENV CI_ENV=docker
 # prepare the php install helper
 COPY --from=ghcr.io/mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
+# CN mirror: deb.debian.org is slow from CN, use aliyun
+RUN for f in /etc/apt/sources.list /etc/apt/sources.list.d/*.sources; do [ -f "$f" ] && sed -i "s|deb.debian.org|mirrors.aliyun.com|g" "$f"; done; true
+
 # system packages
 RUN apt-get update \
     && apt-get install -y --no-install-recommends cron curl \
