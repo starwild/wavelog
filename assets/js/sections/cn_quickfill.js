@@ -694,9 +694,6 @@
 		// my-station info line inside "more fields" + the readonly my-callsign field
 		function renderMyInfo() {
 			var $opt = $('#stationProfile option:selected');
-			$('#cn_my_call').text($opt.data('call') || '-');
-			$('#cn_my_city').text($opt.data('city') || '-');
-			$('#cn_my_grid').text($opt.data('grid') || '-');
 			$('#cn_station_callsign').val($opt.data('call') || '');
 			$('#my_city').val($opt.data('city') || '');
 		}

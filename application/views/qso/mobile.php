@@ -157,30 +157,6 @@ $manual_mode = 1;
                 <input type="text" class="form-control" id="qth" name="qth" maxlength="64">
               </div>
             </div>
-
-            <p class="mb-0">
-              <a class="small" data-bs-toggle="collapse" href="#cn_mobile_more" role="button" aria-expanded="false" aria-controls="cn_mobile_more" id="cn_mobile_more_toggle"><?= __('更多字段（天气/海拔 · 备注）') ?> ▾</a>
-            </p>
-          </div>
-        </div>
-
-        <div class="collapse mb-3" id="cn_mobile_more">
-          <div class="card">
-            <div class="card-body">
-              <?php $this->load->view('qso/components/cn_ham_fields', array('cn_sections' => array('env'))); ?>
-
-              <div class="row mt-2">
-                <div class="col-sm-12 mb-3">
-                  <label for="comment" class="form-label"><?= __('备注（对方）') ?></label>
-                  <input type="text" class="form-control form-control-sm" name="comment" id="comment" maxlength="255">
-                </div>
-              </div>
-
-              <div class="small text-muted">
-                <?= __('我方') ?>：<span id="cn_my_call"></span> · <span id="cn_my_city"></span> · <span id="cn_my_grid"></span>
-                （<?= __('在台站位置里维护') ?>）
-              </div>
-            </div>
           </div>
         </div>
 
@@ -199,7 +175,7 @@ $manual_mode = 1;
           <div id="cn_map" data-lat="<?php echo html_escape($lat); ?>" data-lng="<?php echo html_escape($lng); ?>" style="width:100%;height:200px;"></div>
         </div>
 
-        <?php $this->load->view('qso/components/cn_ham_fields', array('cn_sections' => array('equipment', 'uv'), 'cn_open' => array('equipment' => true, 'uv' => true), 'cn_with_power' => true)); ?>
+        <?php $this->load->view('qso/components/cn_ham_fields', array('cn_sections' => array('equipment', 'env'), 'cn_open' => array('equipment' => true, 'env' => true), 'cn_with_power' => true, 'cn_with_comment' => true)); ?>
 
         <div class="card previous-qsos mt-2">
           <button type="button" class="card-header d-flex justify-content-between align-items-center w-100 text-start" data-bs-toggle="collapse" data-bs-target="#cn_past_body" aria-expanded="false" aria-controls="cn_past_body" style="cursor: pointer;">

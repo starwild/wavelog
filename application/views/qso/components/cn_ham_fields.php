@@ -24,6 +24,7 @@ if (!isset($cn_sections) || !is_array($cn_sections)) {
 }
 if (!isset($cn_open) || !is_array($cn_open)) { $cn_open = array(); }
 if (!isset($cn_with_power)) { $cn_with_power = false; }
+if (!isset($cn_with_comment)) { $cn_with_comment = false; }
 
 $cn_val = function ($column) use ($qso) {
 	if ($qso === null || !isset($qso->$column)) { return ''; }
@@ -177,9 +178,15 @@ $cn_has = function ($section) use ($cn_sections) {
           <label for="alt" class="form-label"><?= $cn_labels['alt']; ?></label>
           <input type="text" class="form-control form-control-sm" name="alt" id="alt" maxlength="16" value="<?= $cn_val('COL_ALT'); ?>" placeholder="例如：850">
         </div>
+        <?php if ($cn_with_comment) { ?>
+        <div class="mb-3">
+          <label for="comment" class="form-label"><?= __('对方备注'); ?></label>
+          <input type="text" class="form-control form-control-sm" name="comment" id="comment" maxlength="255" value="<?= $cn_val('COL_COMMENT'); ?>">
+        </div>
+        <?php } ?>
       </div>
     </div>
-    <small class="form-text text-muted"><?= __('左列我方、右列对方，按场次记录。对方备注写在「备注（对方）」里。') ?></small>
+    <small class="form-text text-muted"><?= $cn_with_comment ? __('左右两列同类对齐：天气对天气、海拔对海拔、备注对备注。我方备注只有自己看，对方备注可给对方看。') : __('左右两列同类对齐，按场次记录。对方备注写主表单的「备注」里。') ?></small>
   </div>
 </div>
 <?php } ?>
